@@ -1,35 +1,31 @@
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
-from matplotlib.widgets import Cursor
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-def draw_figure_on_canvas(canvas, figure):
-    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
-    figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
-    return figure_canvas_agg
-
-
-def add_labels(x, y):
+def add_labels(x, y, axes):
     for i in range(len(x)):
-        plt.text(x[i], y[i], np.round(y[i]), fontsize='x-small', horizontalalignment='center', color='purple')
+        axes[0].text(x[i], y[i], np.round(y[i]), fontsize='x-small', horizontalalignment='center', color='purple')
 
 
-def plot_levels(x, y):
-    fig, ax = plt.subplots()
-    ax.bar(x, y, width=3)
-    ax.grid()
+def plot_levels(x, y, fig, figure_canvas_agg):
+
+    axes = fig.axes
+    axes[0].cla()
+    axes[0].bar(x, y, width=5)
+    axes[0].set_title('System Levels vs. Frequency')
+    axes[0].set_xlabel('Frequency (MHz)')
+    axes[0].set_ylabel('Level (dBmV)')
+    axes[0].grid()
 
     samples = 5
     freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
     level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
 
-    add_labels(freq_labels, level_labels)
-
-    cursor = Cursor(ax, useblit=True, color='red', linewidth=2)
-
-    return plt.gcf()
+    add_labels(freq_labels, level_labels, axes)
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack()
 
 
 def system_levels(high_freq, tilt_at_high_freq, carrier_level, carrier_freq, split_arg="Low"):

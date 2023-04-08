@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-import matplotlib.pyplot as plt
+import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import functions as fu
@@ -34,6 +34,7 @@ frame = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
                            [label4, sg.Push(), carrier_freq],
                            [label5, sg.Push(), split]], size=(640, 150))
 
+
 window = sg.Window("System Levels",
                    layout=[[frame],
                            [sg.Push(), label6, sg.Push()],
@@ -43,16 +44,22 @@ window = sg.Window("System Levels",
                    finalize=True,
                    font=("Helvetica", 10))
 
+# matplotlib
+fig = matplotlib.figure.Figure(figsize=(7, 5.5))
+fig.add_subplot(111).bar([], [])
+figure_canvas_agg = FigureCanvasTkAgg(fig, window["-canvas-"].TKCanvas)
+figure_canvas_agg.draw()
+figure_canvas_agg.get_tk_widget().pack()
 
 while True:
     event, values = window.read()
     match event:
         case "calculate":
+
             x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),\
                                     float(values['carrier_level']), float(values['carrier_freq']), values['split'])
 
-            my_plt = fu.plot_levels(x, y)
-            fu.draw_figure_on_canvas(window["-canvas-"].TKCanvas, my_plt)
+            fu.plot_levels(x, y, fig, figure_canvas_agg)
 
         case "Exit":
             break
