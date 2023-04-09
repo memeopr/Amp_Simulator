@@ -20,10 +20,13 @@ def plot_levels(x, y, fig, figure_canvas_agg):
     axes[0].grid()
 
     samples = 5
-    freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
-    level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
+    try:
+        freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
+        level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
 
-    add_labels(freq_labels, level_labels, axes)
+        add_labels(freq_labels, level_labels, axes)
+    except ValueError or IndexError:
+        pass
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack()
 
