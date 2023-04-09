@@ -67,18 +67,19 @@ while True:
     event, values = window.read()
     match event:
         case "calculate":
+            try:
+                x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),\
+                                        float(values['carrier_level']), float(values['carrier_freq']), values['split'])
 
-            x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),\
-                                    float(values['carrier_level']), float(values['carrier_freq']), values['split'])
+                fu.plot_levels(x, y, fig, figure_canvas_agg)
 
-            fu.plot_levels(x, y, fig, figure_canvas_agg)
-
-            window["-mystery_frequency-"].update("")
-            window["mystery_level"].update("")
-            window["mystery_tilt"].update("")
-            window["-pilot1-"].update("")
-            window["-pilot2-"].update("")
-
+                window["-mystery_frequency-"].update("")
+                window["mystery_level"].update("")
+                window["mystery_tilt"].update("")
+                window["-pilot1-"].update("")
+                window["-pilot2-"].update("")
+            except ValueError:
+                sg.popup_error("Values must be numeric")
         case "-mystery_frequency-":
             freq = values["-mystery_frequency-"]
             if freq.isnumeric():
