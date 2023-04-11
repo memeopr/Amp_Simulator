@@ -7,7 +7,7 @@ import functions as fu
 canvas_size1 = 640
 canvas_size2 = 480
 
-input_size = (20, 1)
+input_size = (15, 1)
 
 sg.theme("DarkTeal2")
 
@@ -35,22 +35,22 @@ frame = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
                                    [label3, sg.Push(), carrier_level],
                                    [label4, sg.Push(), carrier_freq],
                                    [label5, sg.Push(), split]], size=(640, 150))
-frame2 = sg.Frame("Find Level", [[sg.Text("Mystery Frequency"),
+frame2 = sg.Frame("Find Level", [[sg.Text("   Frequency (MHz)"),
                                   sg.InputText(tooltip="Enter Carrier Frequency", key="-mystery_frequency-",
                                                enable_events=True, size=input_size),
                                   sg.Text("", key="mystery_level")]], size=(640, 50))
 
-frame3 = sg.Frame("Find Tilt", [[sg.Text("Pilot 1"),
+frame3 = sg.Frame("Find Tilt", [[sg.Text("         Pilot 1 (MHz)"),
                                 sg.InputText(tooltip="Enter Pilot #1", key="-pilot1-", enable_events=True,
-                                             size=input_size), sg.Text("Pilot 2"),
+                                             size=input_size), sg.Text("Pilot 2 (MHz) "),
                                 sg.InputText(tooltip="Enter Pilot #2", key="-pilot2-", enable_events=True,
                                              size=input_size), sg.Text("", key="mystery_tilt")]], size=(640, 50))
 
-frame4 = sg.Frame("CH <-> Frequency Converter", [[sg.Text("Frequency (MHz)"),
+frame4 = sg.Frame("CH <-> Frequency Converter", [[sg.Text("Frequency (MHz)   "),
                                                   sg.InputText(tooltip="Enter Frequency (MHz)", key="convert_freq",
                                                                enable_events=True, size=input_size),
                                                   sg.Text("", key="CH_NUMBER")],
-                                                 [sg.Text("CH Number"),
+                                                 [sg.Text("CH Number           "),
                                                   sg.InputText(tooltip="Enter ch number", key="convert_ch",
                                                                enable_events=True, size=input_size),
                                                   sg.Text("", key="CH_FREQ")]
@@ -65,7 +65,8 @@ window = sg.Window("System Levels by Tito Velez",
                            [frame3],
                            [frame4]],
                    finalize=True,
-                   font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\appicon.ico")
+                   font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\myicon.ico")
+
 
 # matplotlib
 fig = matplotlib.figure.Figure(figsize=(6.40, 4.80))

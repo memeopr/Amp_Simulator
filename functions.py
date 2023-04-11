@@ -677,6 +677,10 @@ if __name__ == "__main__":
 
     print(ch, find_freq(ch, ncta))
 
+    # To create .exe I used the following command in terminal:
+    # pyinstaller --onefile --windowed --clean --icon myicon.ico --name System_levels gui.py
+
+
 
 
 
