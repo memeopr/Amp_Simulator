@@ -55,7 +55,7 @@ frame4 = sg.Frame("CH <-> Frequency Converter", [[sg.Text("Frequency (MHz)   "),
                                                                enable_events=True, size=input_size),
                                                   sg.Text("", key="CH_FREQ")]
                                                  ], size=(640, 75))
-column = sg.Column(scrollable=True,
+column = sg.Column(scrollable=True,expand_x =True, expand_y =True,
             layout=[[frame],
                     [sg.Push(), label6, sg.Push()],
                     [canvas],
@@ -65,9 +65,10 @@ column = sg.Column(scrollable=True,
                     [frame4]])
 
 window = sg.Window("System Levels by Tito Velez",
-                   layout=[[column]],
-                   finalize=True,
-                   font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\myicon.ico")
+                    layout=[[column]],
+                    finalize=True,
+                    resizable =True,
+                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\myicon.ico")
 
 
 # matplotlib
