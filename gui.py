@@ -55,15 +55,17 @@ frame4 = sg.Frame("CH <-> Frequency Converter", [[sg.Text("Frequency (MHz)   "),
                                                                enable_events=True, size=input_size),
                                                   sg.Text("", key="CH_FREQ")]
                                                  ], size=(640, 75))
+column = sg.Column(scrollable=True,
+            layout=[[frame],
+                    [sg.Push(), label6, sg.Push()],
+                    [canvas],
+                    [sg.Push(), calculate, sg.Exit(key="Exit"), sg.Push()],
+                    [frame2],
+                    [frame3],
+                    [frame4]])
 
 window = sg.Window("System Levels by Tito Velez",
-                   layout=[[frame],
-                           [sg.Push(), label6, sg.Push()],
-                           [canvas],
-                           [sg.Push(), calculate, sg.Exit(key="Exit"), sg.Push()],
-                           [frame2],
-                           [frame3],
-                           [frame4]],
+                   layout=[[column]],
                    finalize=True,
                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\myicon.ico")
 
