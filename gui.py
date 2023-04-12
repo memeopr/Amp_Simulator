@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-import matplotlib
+from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import functions as fu
@@ -55,7 +55,7 @@ frame4 = sg.Frame("CH <-> Frequency Converter", [[sg.Text("Frequency (MHz)   "),
                                                                enable_events=True, size=input_size),
                                                   sg.Text("", key="CH_FREQ")]
                                                  ], size=(640, 75))
-column = sg.Column(scrollable=True,expand_x =True, expand_y =True,
+column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
             layout=[[frame],
                     [sg.Push(), label6, sg.Push()],
                     [canvas],
@@ -68,11 +68,11 @@ window = sg.Window("System Levels by Tito Velez",
                     layout=[[column]],
                     finalize=True,
                     resizable =True,
-                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\myicon.ico")
+                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
 
 
 # matplotlib
-fig = matplotlib.figure.Figure(figsize=(6.40, 4.80))
+fig = Figure(figsize=(6.40, 4.80))
 fig.add_subplot(111).bar([], [])
 figure_canvas_agg = FigureCanvasTkAgg(fig, window["-canvas-"].TKCanvas)
 figure_canvas_agg.draw()
