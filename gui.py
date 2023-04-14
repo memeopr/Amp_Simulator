@@ -30,11 +30,37 @@ split = sg.Combo(values=values, tooltip="Select Frequency Split", key="split", d
 label6 = sg.Text("System Levels Plot")
 canvas = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas-", background_color='white')
 calculate = sg.Button("Calculate", key="calculate")
-frame = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
+
+frameA = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
                                    [label2, sg.Push(), tilt_at_high_freq],
                                    [label3, sg.Push(), carrier_level],
                                    [label4, sg.Push(), carrier_freq],
-                                   [label5, sg.Push(), split]], size=(640, 150))
+                                   [label5, sg.Push(), split]], size=(640, 150), visible=True, key="frameA")
+
+labelB = sg.Text("Enter High Pilot Frequency (MHz)")
+pilot_1_freq = sg.InputText(tooltip="Enter High Pilot Frequency", key="Pilot1_Freq", default_text="54")
+
+labelB2 = sg.Text("Enter High Pilot Level (dBmV)")
+pilot_1_level = sg.InputText(tooltip="Enter High Pilot Level", key="Pilot1_Level", default_text="41")
+
+labelB3 = sg.Text("Enter Low Pilot Frequency (MHz)")
+pilot_2_freq = sg.InputText(tooltip="Enter Low Pilot Frequency", key="Pilot2_Freq", default_text="1218")
+
+labelB4 = sg.Text("Enter Pilot 2 Level (dBmV)")
+pilot_2_level = sg.InputText(tooltip="Enter Low Pilot Level", key="Pilot2_Level", default_text="59")
+
+labelB5 = sg.Text("Frequency Split")
+values = ["Low", "Mid", "High"]
+split2 = sg.Combo(values=values, tooltip="Select Frequency Split", key="split2", default_value="Low", expand_x=True)
+
+frameB = sg.Frame("System Levels", [[labelB, sg.Push(), pilot_1_freq],
+                                   [labelB2, sg.Push(), pilot_1_level],
+                                   [labelB3, sg.Push(), pilot_2_freq],
+                                   [labelB4, sg.Push(), pilot_2_level],
+                                   [labelB5, sg.Push(), split2]], size=(640, 150), visible=False, key="frameB")
+
+use_two_pilots = sg.Checkbox("Use Two Pilots", key="use_two_pilots", enable_events=True)
+
 frame2 = sg.Frame("Find Level", [[sg.Text("   Frequency (MHz)"),
                                   sg.InputText(tooltip="Enter Carrier Frequency", key="-mystery_frequency-",
                                                enable_events=True, size=input_size),
@@ -56,7 +82,9 @@ frame4 = sg.Frame("CH <-> Frequency Converter", [[sg.Text("Frequency (MHz)   "),
                                                   sg.Text("", key="CH_FREQ")]
                                                  ], size=(640, 75))
 column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
-            layout=[[frame],
+            layout=[[use_two_pilots],
+                    [frameA],
+                    [frameB],
                     [sg.Push(), label6, sg.Push()],
                     [canvas],
                     [sg.Push(), calculate, sg.Exit(key="Exit"), sg.Push()],
@@ -80,6 +108,7 @@ figure_canvas_agg.get_tk_widget().pack()
 
 while True:
     event, values = window.read()
+    print(values["use_two_pilots"])
     match event:
         case "calculate":
             try:
@@ -132,7 +161,13 @@ while True:
                 window["CH_FREQ"].update(f"Frequency is  {freq_num} MHz")
             else:
                 window["CH_FREQ"].update("")
-
+        case "use_two_pilots":
+            if values["use_two_pilots"]:
+                window["frameA"].update(visible=False)
+                window["frameB"].update(visible=True)
+            else:
+                window["frameA"].update(visible=True)
+                window["frameB"].update(visible=False)
         case "Exit":
             break
         case sg.WIN_CLOSED:
