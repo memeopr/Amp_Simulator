@@ -1,2 +1,17 @@
 venv
 .idea
+/build/System_levels/Analysis-00.toc
+/build/System_levels/base_library.zip
+/build/System_levels/EXE-00.toc
+/build/System_levels/PKG-00.toc
+/build/System_levels/PYZ-00.pyz
+/build/System_levels/PYZ-00.toc
+/dist/System_levels.exe
+/build/System_levels/System_levels.exe.manifest
+/build/System_levels/System_levels.pkg
+/System_levels.spec
+/build/System_levels/Tree-00.toc
+/build/System_levels/Tree-01.toc
+/build/System_levels/Tree-02.toc
+/build/System_levels/warn-System_levels.txt
+/build/System_levels/xref-System_levels.html
