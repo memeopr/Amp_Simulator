@@ -17,6 +17,8 @@ def plot_levels(x, y, fig, figure_canvas_agg):
     axes[0].set_xlabel('Frequency (MHz)')
     axes[0].set_ylabel('Level (dBmV)')
     axes[0].grid()
+    axes[0].text(x[0], 0, x[0], fontsize='x-small', horizontalalignment='center', color='purple')
+    # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
 
     samples = 5
     try:
@@ -905,7 +907,7 @@ if __name__ == "__main__":
     print(ch, find_freq(ch, ncta))
 
     # To create .exe I used the following command in terminal:
-    # pyinstaller --onefile --windowed --clean --icon myicon.ico --name System_levels gui.py
+    # pyinstaller --onefile --windowed --clean --icon icon.ico --name System_levels gui.py
 
 
 
