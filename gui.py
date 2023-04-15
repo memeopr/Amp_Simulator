@@ -185,11 +185,19 @@ while True:
                 window["label2"].update("Enter High Pilot Level (dBmV)", background_color=color1)
                 window["label3"].update("Enter Low Pilot Frequency (MHz)", background_color=color1)
                 window["label4"].update("Enter Low Pilot Level (dBmV)", background_color=color1)
+                window["high_freq"].set_tooltip("Enter High Pilot Frequency")
+                window["tilt_at_high_freq"].set_tooltip("Enter High Pilot Level")
+                window["carrier_level"].set_tooltip("Enter Low Pilot Frequency")
+                window["carrier_freq"].set_tooltip("Enter Low Pilot Level")
             else:
                 window["label"].update("Enter High Frequency (MHz)", background_color=color2)
                 window["label2"].update("Enter Tilt at High Frequency (dB)", background_color=color2)
                 window["label3"].update("Enter Carrier level (dBmV)", background_color=color2)
                 window["label4"].update("Enter Carrier Frequency (MHz)", background_color=color2)
+                window["high_freq"].set_tooltip("Enter High Frequency")
+                window["tilt_at_high_freq"].set_tooltip("Enter Tilt at High Frequency")
+                window["carrier_level"].set_tooltip("Enter Carrier level")
+                window["carrier_freq"].set_tooltip("Enter Carrier Frequency")
         case "Exit":
             break
         case sg.WIN_CLOSED:
