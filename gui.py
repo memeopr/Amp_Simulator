@@ -7,6 +7,9 @@ import functions as fu
 canvas_size1 = 640
 canvas_size2 = 480
 
+color1 = "#0d3446"
+color2 = "#394a6d"
+
 input_size = (15, 1)
 
 sg.theme("DarkTeal2")
@@ -178,15 +181,15 @@ while True:
                 window["CH_FREQ"].update("")
         case "use_two_pilots":
             if values["use_two_pilots"]:
-                window["label"].update("Enter High Pilot Frequency (MHz)")
-                window["label2"].update("Enter High Pilot Level (dBmV)")
-                window["label3"].update("Enter Low Pilot Frequency (MHz)")
-                window["label4"].update("Enter Low Pilot Level (dBmV)")
+                window["label"].update("Enter High Pilot Frequency (MHz)", background_color=color1)
+                window["label2"].update("Enter High Pilot Level (dBmV)", background_color=color1)
+                window["label3"].update("Enter Low Pilot Frequency (MHz)", background_color=color1)
+                window["label4"].update("Enter Low Pilot Level (dBmV)", background_color=color1)
             else:
-                window["label"].update("Enter High Frequency (MHz)")
-                window["label2"].update("Enter Tilt at High Frequency (dB)")
-                window["label3"].update("Enter Carrier level (dBmV)")
-                window["label4"].update("Enter Carrier Frequency (MHz)")
+                window["label"].update("Enter High Frequency (MHz)", background_color=color2)
+                window["label2"].update("Enter Tilt at High Frequency (dB)", background_color=color2)
+                window["label3"].update("Enter Carrier level (dBmV)", background_color=color2)
+                window["label4"].update("Enter Carrier Frequency (MHz)", background_color=color2)
         case "Exit":
             break
         case sg.WIN_CLOSED:
