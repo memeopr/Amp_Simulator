@@ -176,7 +176,10 @@ while True:
             ch_to_convert = values["convert_ch"]
             if ch_to_convert.isnumeric():
                 freq_num = fu.find_freq(float(ch_to_convert))
-                window["CH_FREQ"].update(f"QAM frequency is  {freq_num} MHz - Analog frequency is {freq_num-1.75}")
+                if freq_num is not None:
+                    window["CH_FREQ"].update(f"QAM frequency is {freq_num} MHz - Analog frequency is {freq_num - 1.75}")
+                else:
+                    window["CH_FREQ"].update("")
             else:
                 window["CH_FREQ"].update("")
         case "use_two_pilots":
