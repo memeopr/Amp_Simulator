@@ -86,11 +86,10 @@ while True:
         case "calculate":
             try:
                 if values["use_two_pilots"]:
-                    new_tilt = float(values['tilt_at_high_freq']) - float(values['carrier_freq'])
 
-                    x, y = fu.system_levels(float(values['high_freq']), new_tilt,
-                                            float(values['tilt_at_high_freq']), float(values['high_freq']),
-                                            values['split'])
+                    x, y = fu.system_levels2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                             float(values["carrier_level"]), float(values["carrier_freq"]),
+                                             values['split'])
 
                     fu.plot_levels(x, y, fig, figure_canvas_agg)
 
@@ -118,10 +117,10 @@ while True:
             freq = values["-mystery_frequency-"]
             if values["use_two_pilots"]:
                 if freq.isnumeric():
-                    new_tilt = float(values['tilt_at_high_freq']) - float(values['carrier_freq'])
-                    z, w = fu.mystery_freq(float(values['high_freq']), new_tilt,
-                                           float(values['tilt_at_high_freq']), float(values['high_freq']),
-                                           float(freq), values['split'])
+
+                    z, w = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                            float(values["carrier_level"]), float(values["carrier_freq"]), float(freq),
+                                            values['split'])
                     window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
                 else:
                     window["mystery_level"].update("")
@@ -137,14 +136,16 @@ while True:
             pilot1 = values["-pilot1-"]
             pilot2 = values["-pilot2-"]
             if values["use_two_pilots"]:
-                new_tilt = float(values['tilt_at_high_freq']) - float(values['carrier_freq'])
+
                 if pilot1.isnumeric() and pilot2.isnumeric():
-                    z1, w1 = fu.mystery_freq(float(values['high_freq']), new_tilt,
-                                             float(values['tilt_at_high_freq']), float(values['high_freq']),
-                                             float(pilot1), values['split'])
-                    z2, w2 = fu.mystery_freq(float(values['high_freq']), new_tilt,
-                                             float(values['tilt_at_high_freq']), float(values['high_freq']),
-                                             float(pilot2), values['split'])
+                    z1, w1 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                              float(values["carrier_level"]), float(values["carrier_freq"]),
+                                              float(pilot1),
+                                              values['split'])
+                    z2, w2 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                              float(values["carrier_level"]), float(values["carrier_freq"]),
+                                              float(pilot2),
+                                              values['split'])
                     tilt = w2 - w1
                     window["mystery_tilt"].update(f"Tilt is : {round(tilt, 2)} dB")
                 else:
