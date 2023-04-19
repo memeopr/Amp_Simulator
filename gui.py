@@ -35,6 +35,8 @@ split = sg.Combo(values=values, tooltip="Select Frequency Split", key="split", d
 label6 = sg.Text("System Levels Plot")
 canvas = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas-", background_color='white')
 calculate = sg.Button("Calculate", key="calculate")
+total_power_text = sg.Text("", key="total_power", justification="right")
+
 frame = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
                                    [label2, sg.Push(), tilt_at_high_freq],
                                    [label3, sg.Push(), carrier_level],
@@ -65,7 +67,7 @@ column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scro
                            [frame],
                            [sg.Push(), label6, sg.Push()],
                            [canvas],
-                           [sg.Push(), calculate, sg.Exit(key="Exit"), sg.Push()],
+                           [sg.Push(), calculate, sg.Exit(key="Exit"), sg.Push(), total_power_text],
                            [frame2],
                            [frame3],
                            [frame4]])
@@ -114,6 +116,8 @@ while True:
                     window["mystery_tilt"].update("")
                     window["-pilot1-"].update("")
                     window["-pilot2-"].update("")
+                total_power = fu.total_power(y)
+                window["total_power"].update(f"Total Power: {round(total_power, 4)} dBmV")
             except ValueError:
                 sg.popup_error("Values must be numeric")
         case "-mystery_frequency-":

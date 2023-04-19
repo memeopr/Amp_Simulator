@@ -895,8 +895,15 @@ def find_freq(ch, ncta=ncta):
             return i[4]
 
 
+def total_power(y):
+    y_m = np.power(10, y/10)
+    y_sum = np.sum(y_m)
+    power = 10 * np.log10(y_sum)
+    return power
+
+
 if __name__ == "__main__":
-    x, y = system_levels(1200, 14.5, 52, 1200, split_arg="low")
+    x, y = system_levels(1218, 17, 52, 1218, split_arg="low")
     w, z = mystery_freq(1200, 14.5, 52, 1200, 1201, split_arg="low")
     print(w, z)
 
@@ -905,6 +912,8 @@ if __name__ == "__main__":
     print(freq, find_channel(freq, ncta))
 
     print(ch, find_freq(ch, ncta))
+
+    print(total_power(y))
 
     # To create .exe I used the following command in terminal:
     # pyinstaller --onefile --windowed --clean --icon icon.ico --name System_levels gui.py
