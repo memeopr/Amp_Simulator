@@ -121,54 +121,60 @@ while True:
             except ValueError:
                 sg.popup_error("Values must be numeric")
         case "-mystery_frequency-":
-            freq = values["-mystery_frequency-"]
-            if values["use_two_pilots"]:
-                if freq.isnumeric():
+            try:
+                freq = values["-mystery_frequency-"]
+                if values["use_two_pilots"]:
+                    if freq.isnumeric():
 
-                    z, w = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                            float(values["carrier_level"]), float(values["carrier_freq"]), float(freq),
-                                            values['split'])
-                    window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
+                        z, w = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                                float(values["carrier_level"]), float(values["carrier_freq"]), float(freq),
+                                                values['split'])
+                        window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
+                    else:
+                        window["mystery_level"].update("")
                 else:
-                    window["mystery_level"].update("")
-            else:
-                if freq.isnumeric():
-                    z, w = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                           float(values['carrier_level']), float(values['carrier_freq']),
-                                           float(freq), values['split'])
-                    window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
-                else:
-                    window["mystery_level"].update("")
+                    if freq.isnumeric():
+                        z, w = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                               float(values['carrier_level']), float(values['carrier_freq']),
+                                               float(freq), values['split'])
+                        window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
+                    else:
+                        window["mystery_level"].update("")
+            except ValueError:
+                sg.popup_error("Values must be numeric - check 'System Levels' Input Boxes")
         case ("-pilot1-" | "-pilot2-"):
-            pilot1 = values["-pilot1-"]
-            pilot2 = values["-pilot2-"]
-            if values["use_two_pilots"]:
+            try:
+                pilot1 = values["-pilot1-"]
+                pilot2 = values["-pilot2-"]
+                if values["use_two_pilots"]:
 
-                if pilot1.isnumeric() and pilot2.isnumeric():
-                    z1, w1 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                              float(values["carrier_level"]), float(values["carrier_freq"]),
-                                              float(pilot1),
-                                              values['split'])
-                    z2, w2 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                              float(values["carrier_level"]), float(values["carrier_freq"]),
-                                              float(pilot2),
-                                              values['split'])
-                    tilt = w2 - w1
-                    window["mystery_tilt"].update(f"Tilt is : {round(tilt, 2)} dB")
+                    if pilot1.isnumeric() and pilot2.isnumeric():
+                        z1, w1 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                                  float(values["carrier_level"]), float(values["carrier_freq"]),
+                                                  float(pilot1),
+                                                  values['split'])
+                        z2, w2 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
+                                                  float(values["carrier_level"]), float(values["carrier_freq"]),
+                                                  float(pilot2),
+                                                  values['split'])
+                        tilt = w2 - w1
+                        window["mystery_tilt"].update(f"Tilt is : {round(tilt, 2)} dB")
+                    else:
+                        window["mystery_tilt"].update("")
                 else:
-                    window["mystery_tilt"].update("")
-            else:
-                if pilot1.isnumeric() and pilot2.isnumeric():
-                    z1, w1 = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                             float(values['carrier_level']), float(values['carrier_freq']),
-                                             float(pilot1), values['split'])
-                    z2, w2 = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                             float(values['carrier_level']), float(values['carrier_freq']),
-                                             float(pilot2), values['split'])
-                    tilt = w2 - w1
-                    window["mystery_tilt"].update(f"Tilt is : {round(tilt, 2)} dB")
-                else:
-                    window["mystery_tilt"].update("")
+                    if pilot1.isnumeric() and pilot2.isnumeric():
+                        z1, w1 = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                                 float(values['carrier_level']), float(values['carrier_freq']),
+                                                 float(pilot1), values['split'])
+                        z2, w2 = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                                 float(values['carrier_level']), float(values['carrier_freq']),
+                                                 float(pilot2), values['split'])
+                        tilt = w2 - w1
+                        window["mystery_tilt"].update(f"Tilt is : {round(tilt, 2)} dB")
+                    else:
+                        window["mystery_tilt"].update("")
+            except ValueError:
+                sg.popup_error("Values must be numeric - check 'System Levels' Input Boxes")
         case "convert_freq":
             freq_to_convert = values["convert_freq"]
             if freq_to_convert.isnumeric():
