@@ -1,5 +1,8 @@
 venv
 .idea
+build
+dist
+*.spec
 /build/System_levels/Analysis-00.toc
 /build/System_levels/base_library.zip
 /build/System_levels/EXE-00.toc

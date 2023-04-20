@@ -35,7 +35,7 @@ split = sg.Combo(values=values, tooltip="Select Frequency Split", key="split", d
 label6 = sg.Text("System Levels Plot")
 canvas = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas-", background_color='white')
 calculate = sg.Button("Calculate", key="calculate")
-total_power_text = sg.Text("", key="total_power", justification="right")
+total_power_text = sg.Text("", key="total_power", justification="right", s=33)
 
 frame = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
                                    [label2, sg.Push(), tilt_at_high_freq],
@@ -67,7 +67,7 @@ column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scro
                            [frame],
                            [sg.Push(), label6, sg.Push()],
                            [canvas],
-                           [sg.Push(), calculate, sg.Exit(key="Exit"), sg.Push(), total_power_text],
+                           [sg.Push(), calculate, sg.Exit(key="Exit"), total_power_text],
                            [frame2],
                            [frame3],
                            [frame4]])
