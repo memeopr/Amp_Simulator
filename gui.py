@@ -71,9 +71,11 @@ column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scro
                            [frame2],
                            [frame3],
                            [frame4]])
+tab1 = sg.Tab("System Levels", layout=[[column]])
+tab2 = sg.Tab("Coax Loss", layout=[[sg.Text("Hi")]])
 
 window = sg.Window("System Levels by Tito Velez",
-                   layout=[[column]],
+                   layout=[[sg.TabGroup([[tab1, tab2]], expand_y=True)]],
                    finalize=True,
                    resizable=True,
                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
@@ -187,7 +189,7 @@ while True:
             if ch_to_convert.isnumeric():
                 freq_num = fu.find_freq(float(ch_to_convert))
                 if freq_num is not None:
-                    window["CH_FREQ"].update(f"QAM frequency is {freq_num} MHz - Analog frequency is {freq_num - 1.75}")
+                    window["CH_FREQ"].update(f"QAM frequency is {freq_num} MHz - Analog frequency is {freq_num - 1.75} MHz")
                 else:
                     window["CH_FREQ"].update("")
             else:
