@@ -22,11 +22,11 @@ high_freq = sg.InputText(tooltip="Enter High Frequency", key="high_freq", defaul
 label2 = sg.Text("Enter Tilt at High Frequency (dB)", key="label2")
 tilt_at_high_freq = sg.InputText(tooltip="Enter Tilt at High Frequency", key="tilt_at_high_freq", default_text="17")
 
-label3 = sg.Text("Enter Carrier level (dBmV)", key="label3")
-carrier_level = sg.InputText(tooltip="Enter Carrier level", key="carrier_level", default_text="52")
+label3 = sg.Text("Enter Carrier Frequency (MHz)", key="label3")
+carrier_freq = sg.InputText(tooltip="Enter Carrier Frequency (MHz)", key="carrier_freq", default_text="1218")
 
-label4 = sg.Text("Enter Carrier Frequency (MHz)", key="label4")
-carrier_freq = sg.InputText(tooltip="Enter Carrier Frequency", key="carrier_freq", default_text="1218")
+label4 = sg.Text("Enter Carrier level (dBmV)", key="label4")
+carrier_level = sg.InputText(tooltip="Enter Carrier level (dBmV)", key="carrier_level", default_text="52")
 
 label5 = sg.Text("Frequency Split")
 values = ["Low", "Mid", "High"]
@@ -39,8 +39,8 @@ total_power_text = sg.Text("", key="total_power", justification="right", s=33)
 
 frame = sg.Frame("System Levels", [[label, sg.Push(), high_freq],
                                    [label2, sg.Push(), tilt_at_high_freq],
-                                   [label3, sg.Push(), carrier_level],
-                                   [label4, sg.Push(), carrier_freq],
+                                   [label3, sg.Push(), carrier_freq],
+                                   [label4, sg.Push(), carrier_level],
                                    [label5, sg.Push(), split]], size=(640, 150))
 frame2 = sg.Frame("Find Level", [[sg.Text("   Frequency (MHz)"),
                                   sg.InputText(tooltip="Enter Carrier Frequency", key="-mystery_frequency-",
@@ -95,7 +95,7 @@ while True:
                 if values["use_two_pilots"]:
 
                     x, y = fu.system_levels2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                             float(values["carrier_level"]), float(values["carrier_freq"]),
+                                             float(values["carrier_freq"]), float(values["carrier_level"]),
                                              values['split'])
 
                     fu.plot_levels(x, y, fig, figure_canvas_agg)
@@ -108,7 +108,7 @@ while True:
 
                 else:
                     x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                            float(values['carrier_level']), float(values['carrier_freq']),
+                                            float(values['carrier_freq']), float(values['carrier_level']),
                                             values['split'])
 
                     fu.plot_levels(x, y, fig, figure_canvas_agg)
@@ -129,7 +129,8 @@ while True:
                     if freq.isnumeric():
 
                         z, w = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                                float(values["carrier_level"]), float(values["carrier_freq"]), float(freq),
+                                                float(values["carrier_freq"]), float(values["carrier_level"]),
+                                                float(freq),
                                                 values['split'])
                         window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
                     else:
@@ -137,7 +138,7 @@ while True:
                 else:
                     if freq.isnumeric():
                         z, w = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                               float(values['carrier_level']), float(values['carrier_freq']),
+                                               float(values['carrier_freq']), float(values['carrier_level']),
                                                float(freq), values['split'])
                         window["mystery_level"].update(f"Level is : {round(w, 2)} dBmV")
                     else:
@@ -152,11 +153,11 @@ while True:
 
                     if pilot1.isnumeric() and pilot2.isnumeric():
                         z1, w1 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                                  float(values["carrier_level"]), float(values["carrier_freq"]),
+                                                  float(values["carrier_freq"]), float(values["carrier_level"]),
                                                   float(pilot1),
                                                   values['split'])
                         z2, w2 = fu.mystery_freq2(float(values['high_freq']), float(values["tilt_at_high_freq"]),
-                                                  float(values["carrier_level"]), float(values["carrier_freq"]),
+                                                  float(values["carrier_freq"]), float(values["carrier_level"]),
                                                   float(pilot2),
                                                   values['split'])
                         tilt = w2 - w1
@@ -166,10 +167,10 @@ while True:
                 else:
                     if pilot1.isnumeric() and pilot2.isnumeric():
                         z1, w1 = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                                 float(values['carrier_level']), float(values['carrier_freq']),
+                                                 float(values['carrier_freq']), float(values['carrier_level']),
                                                  float(pilot1), values['split'])
                         z2, w2 = fu.mystery_freq(float(values['high_freq']), float(values['tilt_at_high_freq']),
-                                                 float(values['carrier_level']), float(values['carrier_freq']),
+                                                 float(values['carrier_freq']), float(values['carrier_level']),
                                                  float(pilot2), values['split'])
                         tilt = w2 - w1
                         window["mystery_tilt"].update(f"Tilt is : {round(tilt, 2)} dB")
@@ -189,7 +190,8 @@ while True:
             if ch_to_convert.isnumeric():
                 freq_num = fu.find_freq(float(ch_to_convert))
                 if freq_num is not None:
-                    window["CH_FREQ"].update(f"QAM frequency is {freq_num} MHz - Analog frequency is {freq_num - 1.75} MHz")
+                    window["CH_FREQ"].update(
+                        f"QAM frequency is {freq_num} MHz - Analog frequency is {freq_num - 1.75} MHz")
                 else:
                     window["CH_FREQ"].update("")
             else:
@@ -207,12 +209,12 @@ while True:
             else:
                 window["label"].update("Enter High Frequency (MHz)", background_color=color2)
                 window["label2"].update("Enter Tilt at High Frequency (dB)", background_color=color2)
-                window["label3"].update("Enter Carrier level (dBmV)", background_color=color2)
-                window["label4"].update("Enter Carrier Frequency (MHz)", background_color=color2)
+                window["label3"].update("Enter Carrier Frequency (MHz)", background_color=color2)
+                window["label4"].update("Enter Carrier level (dBmV)", background_color=color2)
                 window["high_freq"].set_tooltip("Enter High Frequency")
                 window["tilt_at_high_freq"].set_tooltip("Enter Tilt at High Frequency")
-                window["carrier_level"].set_tooltip("Enter Carrier level")
-                window["carrier_freq"].set_tooltip("Enter Carrier Frequency")
+                window["carrier_level"].set_tooltip("Enter Carrier Frequency (MHz)")
+                window["carrier_freq"].set_tooltip("Enter Carrier level (dBmV)")
         case "Exit":
             break
         case sg.WIN_CLOSED:
