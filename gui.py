@@ -1,8 +1,25 @@
 import PySimpleGUI as sg
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+import pandas as pd
 import functions as fu
+
+
+def load_cable_descriptions():
+    return pd.read_csv("cable_descriptions.csv", encoding="UTF-8")
+
+
+def load_cable_data_100f():
+    return pd.read_csv("new_coax_db_per_100_feet.csv", encoding="UTF-8")
+
+
+def load_cable_100m():
+    return pd.read_csv("new_coax_db_per_100_meters.csv", encoding="UTF-8")
+
+#############################################################################################################
+#         TAB 1 -System Levels
+#############################################################################################################
+
 
 canvas_size1 = 640
 canvas_size2 = 480
@@ -23,10 +40,10 @@ label2 = sg.Text("Enter Tilt at High Frequency (dB)", key="label2")
 tilt_at_high_freq = sg.InputText(tooltip="Enter Tilt at High Frequency", key="tilt_at_high_freq", default_text="17")
 
 label3 = sg.Text("Enter Carrier Frequency (MHz)", key="label3")
-carrier_freq = sg.InputText(tooltip="Enter Carrier Frequency (MHz)", key="carrier_freq", default_text="1218")
+carrier_freq = sg.InputText(tooltip="Enter Carrier Frequency (MHz)", key="carrier_freq", default_text="54")
 
-label4 = sg.Text("Enter Carrier level (dBmV)", key="label4")
-carrier_level = sg.InputText(tooltip="Enter Carrier level (dBmV)", key="carrier_level", default_text="52")
+label4 = sg.Text("Enter Carrier Level (dBmV)", key="label4")
+carrier_level = sg.InputText(tooltip="Enter Carrier Level (dBmV)", key="carrier_level", default_text="35")
 
 label5 = sg.Text("Frequency Split")
 values = ["Low", "Mid", "High"]
@@ -72,7 +89,52 @@ column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scro
                            [frame3],
                            [frame4]])
 tab1 = sg.Tab("System Levels", layout=[[column]])
-tab2 = sg.Tab("Coax Loss", layout=[[sg.Text("Hi")]])
+
+#############################################################################################################
+#         TAB 2 -Coax Loss
+#############################################################################################################
+
+cable_length_units_label = sg.Text("Select Length Units")
+feet_radio = sg.Radio("Feet", group_id=1, default=True, enable_events=True, key="feet_radio")
+meters_radio = sg.Radio("Meters", group_id=1, enable_events=True, key="meters_radio")
+cable_length_label = sg.Text("Enter Cable Length in Feet", key="cable_length_label")
+cable_length = sg.InputText(tooltip="Enter Cable Length", key="-cable_length-", default_text="200")
+
+layout1_tab2 = [[cable_length_units_label],
+                [feet_radio, meters_radio],
+                [cable_length_label],
+                [cable_length]]
+
+frame_t1 = sg.Frame("Coax Cable Parameters", layout=layout1_tab2, size=(640, 135))
+
+##################################################################################################################
+
+coax_data_f = load_cable_data_100f()
+coax_data_m = load_cable_100m()
+
+cable_descriptions = load_cable_descriptions()
+
+cable_types = list(coax_data_f.columns.values)[1:]
+
+select_cable_combo = sg.Combo(cable_types, key="cable_type", default_value="QR® 540 JCAT 3G AJ SM", enable_events=True)
+
+cable_desc = sg.Text(cable_descriptions[cable_descriptions["Part Name"] == "QR® 540 JCAT 3G AJ SM"]["Description"].
+                     squeeze(), key="cable_desc", size=(60, 2))
+
+layout2_tab2 = [[select_cable_combo],
+                [cable_desc]]
+
+
+frame_t2 = sg.Frame("Select Coax Cable", layout=layout2_tab2, size=(640, 90))
+
+canvas2 = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas2-", background_color='white')
+
+column2 = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
+                    layout=[[frame_t1],
+                            [frame_t2],
+                            [canvas2]])
+
+tab2 = sg.Tab("Coax Loss", layout=[[column2]])
 
 window = sg.Window("System Levels by Tito Velez",
                    layout=[[sg.TabGroup([[tab1, tab2]], expand_y=True)]],
@@ -80,15 +142,28 @@ window = sg.Window("System Levels by Tito Velez",
                    resizable=True,
                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
 
-# matplotlib
+# matplotlib System levels
+
 fig = Figure(figsize=(6.40, 4.80))
 fig.add_subplot(111).bar([], [])
+fig.set_facecolor(color2)
 figure_canvas_agg = FigureCanvasTkAgg(fig, window["-canvas-"].TKCanvas)
 figure_canvas_agg.draw()
 figure_canvas_agg.get_tk_widget().pack()
 
+# matplotlib Coax Plot
+
+fig2 = Figure(figsize=(6.40, 4.80))
+fig2.add_subplot(111).plot([], [])
+fig2.set_facecolor(color2)
+figure_canvas_agg2 = FigureCanvasTkAgg(fig2, window["-canvas2-"].TKCanvas)
+figure_canvas_agg2.draw()
+figure_canvas_agg2.get_tk_widget().pack()
+#fu.plot_coax()
+
 while True:
     event, values = window.read()
+    print(event, values)
     match event:
         case "calculate":
             try:
@@ -214,7 +289,14 @@ while True:
                 window["high_freq"].set_tooltip("Enter High Frequency")
                 window["tilt_at_high_freq"].set_tooltip("Enter Tilt at High Frequency")
                 window["carrier_level"].set_tooltip("Enter Carrier Frequency (MHz)")
-                window["carrier_freq"].set_tooltip("Enter Carrier level (dBmV)")
+                window["carrier_freq"].set_tooltip("Enter Carrier Level (dBmV)")
+        case "feet_radio":
+            window["cable_length_label"].update("Enter Cable Length in Feet")
+        case "meters_radio":
+            window["cable_length_label"].update("Enter Cable Length in Meters")
+        case "cable_type":
+            window["cable_desc"].update(cable_descriptions[cable_descriptions["Part Name"] == values["cable_type"]]
+                                        ["Description"].squeeze())
         case "Exit":
             break
         case sg.WIN_CLOSED:

@@ -9,15 +9,53 @@ def add_labels(x, y, axes):
 
 
 def plot_levels(x, y, fig, figure_canvas_agg):
+    color = "#c0ffb3"
 
     axes = fig.axes
     axes[0].cla()
     axes[0].bar(x, y, width=5)
-    axes[0].set_title('System Levels vs. Frequency')
+    axes[0].set_title('System Levels vs. Frequency', color=color)
     axes[0].set_xlabel('Frequency (MHz)')
     axes[0].set_ylabel('Level (dBmV)')
     axes[0].grid()
     axes[0].text(x[0], 0, x[0], fontsize='x-small', horizontalalignment='center', color='purple')
+
+    axes[0].xaxis.label.set_color(color)  # setting up X-axis label color to yellow
+    axes[0].yaxis.label.set_color(color)  # setting up Y-axis label color to blue
+
+    axes[0].tick_params(axis='x', colors=color)  # setting up X-axis tick color to red
+    axes[0].tick_params(axis='y', colors=color)
+    # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
+
+    samples = 5
+    try:
+        freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
+        level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
+
+        add_labels(freq_labels, level_labels, axes)
+    except ValueError or IndexError:
+        pass
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack()
+
+
+def plot_coax(x, y, fig, figure_canvas_agg):
+    color = "#c0ffb3"
+
+    axes = fig.axes
+    axes[0].cla()
+    axes[0].bar(x, y, width=5)
+    axes[0].set_title('System Levels vs. Frequency', color=color)
+    axes[0].set_xlabel('Frequency (MHz)')
+    axes[0].set_ylabel('Level (dBmV)')
+    axes[0].grid()
+    axes[0].text(x[0], 0, x[0], fontsize='x-small', horizontalalignment='center', color='purple')
+
+    axes[0].xaxis.label.set_color(color)  # setting up X-axis label color to yellow
+    axes[0].yaxis.label.set_color(color)  # setting up Y-axis label color to blue
+
+    axes[0].tick_params(axis='x', colors=color)  # setting up X-axis tick color to red
+    axes[0].tick_params(axis='y', colors=color)
     # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
 
     samples = 5
