@@ -16,6 +16,7 @@ def load_cable_data_100f():
 def load_cable_100m():
     return pd.read_csv("new_coax_db_per_100_meters.csv", encoding="UTF-8")
 
+
 #############################################################################################################
 #         TAB 1 -System Levels
 #############################################################################################################
@@ -98,7 +99,7 @@ cable_length_units_label = sg.Text("Select Length Units")
 feet_radio = sg.Radio("Feet", group_id=1, default=True, enable_events=True, key="feet_radio")
 meters_radio = sg.Radio("Meters", group_id=1, enable_events=True, key="meters_radio")
 cable_length_label = sg.Text("Enter Cable Length in Feet", key="cable_length_label")
-cable_length = sg.InputText(tooltip="Enter Cable Length", key="-cable_length-", default_text="200")
+cable_length = sg.InputText(tooltip="Enter Cable Length", key="-cable_length-", default_text="200", enable_events=True)
 
 layout1_tab2 = [[cable_length_units_label],
                 [feet_radio, meters_radio],
@@ -124,14 +125,26 @@ cable_desc = sg.Text(cable_descriptions[cable_descriptions["Part Name"] == "QR®
 layout2_tab2 = [[select_cable_combo],
                 [cable_desc]]
 
-
 frame_t2 = sg.Frame("Select Coax Cable", layout=layout2_tab2, size=(640, 90))
+
+temp_slider_label = sg.Text("Temperature (F)")
+temp_slider = sg.Slider(range=(-80, 200), default_value=68, enable_events=True, key="-temperature-",
+                        orientation="horizontal", size=(60, 20))
+
+choice1 = sg.Combo(["Full", "Return", "Forward"], key="choice1", default_value="Full", enable_events=True)
+choice2 = sg.Combo(["Low", "Mid", "High"], key="choice2", default_value="Low", enable_events=True, visible=False)
 
 canvas2 = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas2-", background_color='white')
 
 column2 = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
                     layout=[[frame_t1],
                             [frame_t2],
+                            [sg.HorizontalSeparator()],
+                            [temp_slider_label],
+                            [temp_slider],
+                            [sg.HorizontalSeparator()],
+                            [sg.Text("Select Frequency Range to Plot"), choice1,
+                             sg.Text("Select Split to Plot", visible=False, key="choice 2 text"), choice2],
                             [canvas2]])
 
 tab2 = sg.Tab("Coax Loss", layout=[[column2]])
@@ -159,7 +172,9 @@ fig2.set_facecolor(color2)
 figure_canvas_agg2 = FigureCanvasTkAgg(fig2, window["-canvas2-"].TKCanvas)
 figure_canvas_agg2.draw()
 figure_canvas_agg2.get_tk_widget().pack()
-#fu.plot_coax()
+
+coax = coax_data_f
+fu.plot_coax(coax, 200, 68, "QR® 540 JCAT 3G AJ SM", fig2, figure_canvas_agg2)
 
 while True:
     event, values = window.read()
@@ -292,11 +307,48 @@ while True:
                 window["carrier_freq"].set_tooltip("Enter Carrier Level (dBmV)")
         case "feet_radio":
             window["cable_length_label"].update("Enter Cable Length in Feet")
+            coax = coax_data_f
+            fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+                         figure_canvas_agg2)
         case "meters_radio":
             window["cable_length_label"].update("Enter Cable Length in Meters")
+            coax = coax_data_m
+            fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+                         figure_canvas_agg2)
         case "cable_type":
             window["cable_desc"].update(cable_descriptions[cable_descriptions["Part Name"] == values["cable_type"]]
                                         ["Description"].squeeze())
+            fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+                         figure_canvas_agg2)
+        case "-cable_length-":
+            if values["-cable_length-"].isnumeric():
+                fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+                             figure_canvas_agg2)
+            else:
+                sg.popup_error("Length must be numeric")
+        case "-temperature-":
+            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+            #              figure_canvas_agg2)
+
+            fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                          values["choice1"], values["choice2"], fig2,
+                          figure_canvas_agg2)
+        case "choice1":
+            if values["choice1"] != "Full":
+                window["choice 2 text"].update(visible=True)
+                window["choice2"].update(visible=True)
+            else:
+                window["choice 2 text"].update(visible=False)
+                window["choice2"].update(visible=False)
+
+            fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                          values["choice1"], values["choice2"], fig2,
+                          figure_canvas_agg2)
+
+        case "choice2":
+            fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                          values["choice1"], values["choice2"], fig2,
+                          figure_canvas_agg2)
         case "Exit":
             break
         case sg.WIN_CLOSED:

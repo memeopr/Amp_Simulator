@@ -39,17 +39,33 @@ def plot_levels(x, y, fig, figure_canvas_agg):
     figure_canvas_agg.get_tk_widget().pack()
 
 
-def plot_coax(x, y, fig, figure_canvas_agg):
+def total_loss(x, distance_arg):
+    return x * distance_arg / 100
+
+
+def temp_change(x, temp_arg):
+    return x * (1 + ((.01 / 10) * (temp_arg - 68)))
+
+
+def plot_coax(coax, distance, temp, cable_type, fig, figure_canvas_agg):
     color = "#c0ffb3"
+
+    coax[cable_type + " at 68F"] = coax[cable_type].map(lambda x: total_loss(x, distance))
+    coax["at_new_temp"] = coax[cable_type + " at 68F"].map(lambda x: temp_change(x, temp))
+
+    x = coax["Frequency"]
+    y = coax[cable_type + " at 68F"]
+    new_temp = coax["at_new_temp"]
 
     axes = fig.axes
     axes[0].cla()
-    axes[0].bar(x, y, width=5)
-    axes[0].set_title('System Levels vs. Frequency', color=color)
+    axes[0].plot(x, y, "--")
+    axes[0].plot(x, new_temp, "m")
+    axes[0].set_title('Cable Loss vs. Frequency', color=color)
     axes[0].set_xlabel('Frequency (MHz)')
-    axes[0].set_ylabel('Level (dBmV)')
+    axes[0].set_ylabel('Loss (dB)')
     axes[0].grid()
-    axes[0].text(x[0], 0, x[0], fontsize='x-small', horizontalalignment='center', color='purple')
+    # axes[0].text(x[0], 0, x[0], fontsize='x-small', horizontalalignment='center', color='purple')
 
     axes[0].xaxis.label.set_color(color)  # setting up X-axis label color to yellow
     axes[0].yaxis.label.set_color(color)  # setting up Y-axis label color to blue
@@ -58,17 +74,70 @@ def plot_coax(x, y, fig, figure_canvas_agg):
     axes[0].tick_params(axis='y', colors=color)
     # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
 
-    samples = 5
-    try:
-        freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
-        level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
-
-        add_labels(freq_labels, level_labels, axes)
-    except ValueError or IndexError:
-        pass
+    # samples = 5
+    # try:
+    #     freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
+    #     level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
+    #
+    #     add_labels(freq_labels, level_labels, axes)
+    # except ValueError or IndexError:
+    #     pass
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack()
 
+
+def plot_coax2(coax, distance, temp, cable_type, choice1, choice2, fig, figure_canvas_agg):
+    color = "#c0ffb3"
+
+    coax[cable_type + " at 68F"] = coax[cable_type].map(lambda x: total_loss(x, distance))
+    coax["at_new_temp"] = coax[cable_type + " at 68F"].map(lambda x: temp_change(x, temp))
+
+    if choice1 == "Return":
+        if choice2 == "Low":
+            coax = coax[coax["Frequency"] < 54]
+        elif choice2 == "Mid":
+            coax = coax[coax["Frequency"] < 108]
+        else:
+            coax = coax[coax["Frequency"] < 254]
+    elif choice1 == "Forward":
+        if choice2 == "Low":
+            coax = coax[(coax["Frequency"] >= 54) & (coax["Frequency"] <= 1218)]
+        elif choice2 == "Mid":
+            coax = coax[(coax["Frequency"] >= 108) & (coax["Frequency"] <= 1218)]
+        else:
+            coax = coax[(coax["Frequency"] >= 254) & (coax["Frequency"] <= 1218)]
+
+    x = coax["Frequency"]
+    y = coax[cable_type + " at 68F"]
+    new_temp = coax["at_new_temp"]
+
+    axes = fig.axes
+    axes[0].cla()
+    axes[0].plot(x, y, "--")
+    axes[0].plot(x, new_temp, "m")
+    axes[0].set_title('Cable Loss vs. Frequency', color=color)
+    axes[0].set_xlabel('Frequency (MHz)')
+    axes[0].set_ylabel('Loss (dB)')
+    axes[0].grid()
+    # axes[0].text(x[0], 0, x[0], fontsize='x-small', horizontalalignment='center', color='purple')
+
+    axes[0].xaxis.label.set_color(color)  # setting up X-axis label color to yellow
+    axes[0].yaxis.label.set_color(color)  # setting up Y-axis label color to blue
+
+    axes[0].tick_params(axis='x', colors=color)  # setting up X-axis tick color to red
+    axes[0].tick_params(axis='y', colors=color)
+    # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
+
+    # samples = 5
+    # try:
+    #     freq_labels = np.append(x[::int(round(len(x) / samples))], x[-1])
+    #     level_labels = np.append(y[::int(round(len(y) / samples))], y[-1])
+    #
+    #     add_labels(freq_labels, level_labels, axes)
+    # except ValueError or IndexError:
+    #     pass
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack()
 
 def system_levels(high_freq, tilt_at_high_freq, carrier_freq, carrier_level, split_arg="Low"):
     split = {"Low": (42, 54),
