@@ -176,6 +176,10 @@ figure_canvas_agg2.get_tk_widget().pack()
 coax = coax_data_f
 fu.plot_coax(coax, 200, 68, "QR® 540 JCAT 3G AJ SM", fig2, figure_canvas_agg2)
 
+x, y = fu.system_levels(1218, 17, 54, 35)
+
+fu.plot_levels(x, y, fig, figure_canvas_agg)
+
 while True:
     event, values = window.read()
     print(event, values)
