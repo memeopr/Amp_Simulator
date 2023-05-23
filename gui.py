@@ -308,22 +308,34 @@ while True:
         case "feet_radio":
             window["cable_length_label"].update("Enter Cable Length in Feet")
             coax = coax_data_f
-            fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-                         figure_canvas_agg2)
+            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+            #              figure_canvas_agg2)
+            fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                          values["choice1"], values["choice2"], fig2,
+                          figure_canvas_agg2)
         case "meters_radio":
             window["cable_length_label"].update("Enter Cable Length in Meters")
             coax = coax_data_m
-            fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-                         figure_canvas_agg2)
+            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+            #              figure_canvas_agg2)
+            fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                          values["choice1"], values["choice2"], fig2,
+                          figure_canvas_agg2)
         case "cable_type":
             window["cable_desc"].update(cable_descriptions[cable_descriptions["Part Name"] == values["cable_type"]]
                                         ["Description"].squeeze())
-            fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-                         figure_canvas_agg2)
+            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+            #              figure_canvas_agg2)
+            fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                          values["choice1"], values["choice2"], fig2,
+                          figure_canvas_agg2)
         case "-cable_length-":
             if values["-cable_length-"].isnumeric():
-                fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-                             figure_canvas_agg2)
+                # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
+                #              figure_canvas_agg2)
+                fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
+                              values["choice1"], values["choice2"], fig2,
+                              figure_canvas_agg2)
             else:
                 sg.popup_error("Length must be numeric")
         case "-temperature-":
