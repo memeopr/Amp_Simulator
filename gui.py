@@ -136,6 +136,17 @@ choice2 = sg.Combo(["Low", "Mid", "High"], key="choice2", default_value="Low", e
 
 canvas2 = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas2-", background_color='white')
 
+show_system_levels_checkbox = sg.Checkbox("Display System levels", key="display_system_levels", enable_events=True)
+canvas3 = sg.Canvas(size=(canvas_size1, canvas_size2), key="-canvas3-", background_color='white')
+
+distance_slider_label = sg.Text("Distance Slider")
+distance_slider = sg.Slider(range=(0, 200), default_value=0, enable_events=True, key="-distance-",
+                            orientation="horizontal", size=(60, 20))
+
+frame_t3 = sg.Frame("System Levels vs Frequency", layout=[[distance_slider_label],
+                                                          [distance_slider],
+                                                          [canvas3]], visible=False, key="system_levels_frame")
+
 column2 = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
                     layout=[[frame_t1],
                             [frame_t2],
@@ -145,7 +156,10 @@ column2 = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scr
                             [sg.HorizontalSeparator()],
                             [sg.Text("Select Frequency Range to Plot"), choice1,
                              sg.Text("Select Split to Plot", visible=False, key="choice 2 text"), choice2],
-                            [canvas2]])
+                            [canvas2],
+                            [sg.HorizontalSeparator()],
+                            [show_system_levels_checkbox],
+                            [frame_t3]])
 
 tab2 = sg.Tab("Coax Loss", layout=[[column2]])
 
@@ -173,6 +187,15 @@ figure_canvas_agg2 = FigureCanvasTkAgg(fig2, window["-canvas2-"].TKCanvas)
 figure_canvas_agg2.draw()
 figure_canvas_agg2.get_tk_widget().pack()
 
+# matplotlib System Plots 3
+
+fig3 = Figure(figsize=(6.40, 4.80))
+fig3.add_subplot(111).plot([], [])
+fig3.set_facecolor(color2)
+figure_canvas_agg3 = FigureCanvasTkAgg(fig3, window["-canvas3-"].TKCanvas)
+figure_canvas_agg3.draw()
+figure_canvas_agg3.get_tk_widget().pack()
+
 coax = coax_data_f
 fu.plot_coax(coax, 200, 68, "QR® 540 JCAT 3G AJ SM", fig2, figure_canvas_agg2)
 
@@ -193,6 +216,7 @@ while True:
                                              values['split'])
 
                     fu.plot_levels(x, y, fig, figure_canvas_agg)
+                    fu.plot_levels(x, y, fig3, figure_canvas_agg3)
 
                     window["-mystery_frequency-"].update("")
                     window["mystery_level"].update("")
@@ -206,6 +230,7 @@ while True:
                                             values['split'])
 
                     fu.plot_levels(x, y, fig, figure_canvas_agg)
+                    fu.plot_levels(x, y, fig3, figure_canvas_agg3)
 
                     window["-mystery_frequency-"].update("")
                     window["mystery_level"].update("")
@@ -312,43 +337,58 @@ while True:
         case "feet_radio":
             window["cable_length_label"].update("Enter Cable Length in Feet")
             coax = coax_data_f
-            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-            #              figure_canvas_agg2)
+
             fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                           values["choice1"], values["choice2"], fig2,
                           figure_canvas_agg2)
         case "meters_radio":
             window["cable_length_label"].update("Enter Cable Length in Meters")
             coax = coax_data_m
-            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-            #              figure_canvas_agg2)
+
             fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                           values["choice1"], values["choice2"], fig2,
                           figure_canvas_agg2)
         case "cable_type":
             window["cable_desc"].update(cable_descriptions[cable_descriptions["Part Name"] == values["cable_type"]]
                                         ["Description"].squeeze())
-            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-            #              figure_canvas_agg2)
+
             fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                           values["choice1"], values["choice2"], fig2,
                           figure_canvas_agg2)
         case "-cable_length-":
             if values["-cable_length-"].isnumeric():
-                # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-                #              figure_canvas_agg2)
+
                 fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                               values["choice1"], values["choice2"], fig2,
                               figure_canvas_agg2)
+                window["-distance-"].update(range=(0, values["-cable_length-"]))
             else:
                 sg.popup_error("Length must be numeric")
         case "-temperature-":
-            # fu.plot_coax(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"], fig2,
-            #              figure_canvas_agg2)
 
             fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                           values["choice1"], values["choice2"], fig2,
                           figure_canvas_agg2)
+
+            if values["use_two_pilots"]:
+                x, y = fu.system_levels2(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                         float(values['carrier_freq']), float(values['carrier_level']),
+                                         values['split'])
+            else:
+                x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                        float(values['carrier_freq']), float(values['carrier_level']),
+                                        values['split'])
+
+            df = pd.DataFrame(list(zip(x, y)), columns=["Frequency (MHz)", "Level (dBmV)"])
+
+            coax_Freq_Modified = coax[coax["Frequency"].isin(x)]
+
+            coax_Freq_Modified["at_new_temp"] = coax_Freq_Modified["at_new_temp"].map(lambda x: fu.total_loss(x, values["-distance-"] / float(values['-cable_length-']) * 100))
+            coax_Freq_Modified.reset_index(inplace=True, drop=True)
+            y = coax_Freq_Modified["at_new_temp"] + df["Level (dBmV)"]
+
+            fu.plot_levels(x, y.values, fig3, figure_canvas_agg3)
+
         case "choice1":
             if values["choice1"] != "Full":
                 window["choice 2 text"].update(visible=True)
@@ -365,6 +405,31 @@ while True:
             fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                           values["choice1"], values["choice2"], fig2,
                           figure_canvas_agg2)
+        case "display_system_levels":
+            if values["display_system_levels"]:
+                window["system_levels_frame"].update(visible=True)
+
+            else:
+                window["system_levels_frame"].update(visible=False)
+        case "-distance-":
+            if values["use_two_pilots"]:
+                x, y = fu.system_levels2(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                         float(values['carrier_freq']), float(values['carrier_level']),
+                                         values['split'])
+            else:
+                x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                        float(values['carrier_freq']), float(values['carrier_level']),
+                                        values['split'])
+
+            df = pd.DataFrame(list(zip(x, y)), columns=["Frequency (MHz)", "Level (dBmV)"])
+
+            coax_Freq_Modified = coax[coax["Frequency"].isin(x)]
+
+            coax_Freq_Modified["at_new_temp"] = coax_Freq_Modified["at_new_temp"].map(lambda x: fu.total_loss(x, values["-distance-"] / float(values['-cable_length-']) * 100))
+            coax_Freq_Modified.reset_index(inplace=True, drop=True)
+            y = coax_Freq_Modified["at_new_temp"] + df["Level (dBmV)"]
+
+            fu.plot_levels(x, y.values, fig3, figure_canvas_agg3)
         case "Exit":
             break
         case sg.WIN_CLOSED:
