@@ -205,7 +205,7 @@ fu.plot_levels(x, y, fig, figure_canvas_agg)
 
 while True:
     event, values = window.read()
-    print(event, values)
+
     match event:
         case "calculate":
             try:
