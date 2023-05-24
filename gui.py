@@ -426,6 +426,7 @@ while True:
             coax_Freq_Modified = coax[coax["Frequency"].isin(x)]
 
             coax_Freq_Modified["at_new_temp"] = coax_Freq_Modified["at_new_temp"].map(lambda x: fu.total_loss(x, values["-distance-"] / float(values['-cable_length-']) * 100))
+            #coax_Freq_Modified["at_new_temp"] = coax_Freq_Modified.loc[:, "at_new_temp"].map(lambda x: fu.total_loss(x, values["-distance-"] / float(values['-cable_length-']) * 100))
             coax_Freq_Modified.reset_index(inplace=True, drop=True)
             y = coax_Freq_Modified["at_new_temp"] + df["Level (dBmV)"]
 

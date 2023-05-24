@@ -10,7 +10,7 @@ def add_labels(x, y, axes):
 
 def plot_levels(x, y, fig, figure_canvas_agg):
     color = "#c0ffb3"
-
+    tilt = y[-1] - y[0]
     axes = fig.axes
     axes[0].cla()
     axes[0].bar(x, y, width=5)
@@ -26,6 +26,8 @@ def plot_levels(x, y, fig, figure_canvas_agg):
     axes[0].tick_params(axis='x', colors=color)  # setting up X-axis tick color to red
     axes[0].tick_params(axis='y', colors=color)
     # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
+
+    axes[0].text(x[int(len(x)/2)], max(y)+.5, f"Tilt: {np.round(tilt, 1)}", fontsize='x-small', horizontalalignment='center', color='purple')
 
     samples = 5
     try:
