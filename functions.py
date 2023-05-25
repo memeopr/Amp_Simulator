@@ -49,21 +49,14 @@ def temp_change(x, temp_arg):
     return x * (1 + ((.01 / 10) * (temp_arg - 68)))
 
 
-def plot_coax(coax, distance, temp, cable_type, fig, figure_canvas_agg):
+def plot_tap_loss(x, y, fig, figure_canvas_agg):
     color = "#c0ffb3"
-
-    coax[cable_type + " at 68F"] = coax[cable_type].map(lambda x: total_loss(x, distance))
-    coax["at_new_temp"] = coax[cable_type + " at 68F"].map(lambda x: temp_change(x, temp))
-
-    x = coax["Frequency"]
-    y = coax[cable_type + " at 68F"]
-    new_temp = coax["at_new_temp"]
 
     axes = fig.axes
     axes[0].cla()
-    axes[0].plot(x, y, "--")
-    axes[0].plot(x, new_temp, "m")
-    axes[0].set_title('Cable Loss vs. Frequency', color=color)
+    axes[0].plot(x, y)
+
+    axes[0].set_title('Tap Loss vs. Frequency', color=color)
     axes[0].set_xlabel('Frequency (MHz)')
     axes[0].set_ylabel('Loss (dB)')
     axes[0].grid()

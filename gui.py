@@ -163,8 +163,42 @@ column2 = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scr
 
 tab2 = sg.Tab("Coax Loss", layout=[[column2]])
 
+#############################################################################################################
+#         TAB 3 -Tap Loss
+#############################################################################################################
+
+taps_df = pd.read_csv("FFT-Q_TAPS.csv")
+taps = taps_df.columns.to_list()[1:]
+
+
+two_way = [x for x in taps if "FFT2" in x.split("-")[0]]
+four_way = [x for x in taps if "FFT4" in x.split("-")[0]]
+eight_way = [x for x in taps if "FFT8" in x.split("-")[0]]
+
+tap_layout = []
+for i, text in enumerate(two_way):
+    tap_layout.append([sg.Text(text, size=10), sg.Spin(list(range(0, 21)), size=10, enable_events=True, key=f"{text}")])
+for i, text in enumerate(four_way):
+    tap_layout[i].append(sg.Text(text, size=10))
+    tap_layout[i].append(sg.Spin(list(range(0, 21)), size=10, enable_events=True, key=f"{text}"))
+for i, text in enumerate(eight_way):
+    tap_layout[i].append(sg.Text(text, size=10))
+    tap_layout[i].append(sg.Spin(list(range(0, 21)), size=10, enable_events=True, key=f"{text}"))
+
+f1 = [[sg.Text("2-Way TAPs", size=22), sg.Text("4-Way TAPs", size=22), sg.Text("8-Way TAPs", size=22)]]
+f2 = [[sg.HorizontalSeparator()]]
+f3 = [[sg.Button("Reset", key='tap_reset')]]
+f4 = [[sg.HorizontalSeparator()]]
+f5 = [[sg.Canvas(size=(640, 480), key="-canvas4-", background_color='white')]]
+frame_layout = f1 + f2 + tap_layout + f3 + f4 + f5
+
+tap_frame = sg.Frame("RF Taps Selection", layout=frame_layout)
+tap_column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
+                       layout=[[tap_frame]])
+
+tab3 = sg.Tab("Taps Loss", layout=[[tap_column]])
 window = sg.Window("System Levels by Tito Velez",
-                   layout=[[sg.TabGroup([[tab1, tab2]], expand_y=True)]],
+                   layout=[[sg.TabGroup([[tab1, tab2, tab3]], expand_y=True)]],
                    finalize=True,
                    resizable=True,
                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
@@ -196,15 +230,35 @@ figure_canvas_agg3 = FigureCanvasTkAgg(fig3, window["-canvas3-"].TKCanvas)
 figure_canvas_agg3.draw()
 figure_canvas_agg3.get_tk_widget().pack()
 
+# matplotlib System Plots 4
+
+fig4 = Figure(figsize=(6.40, 4.80))
+fig4.add_subplot(111).plot([], [])
+fig4.set_facecolor(color2)
+figure_canvas_agg4 = FigureCanvasTkAgg(fig4, window["-canvas4-"].TKCanvas)
+figure_canvas_agg4.draw()
+figure_canvas_agg4.get_tk_widget().pack()
+
+
 coax = coax_data_f
-fu.plot_coax(coax, 200, 68, "QR® 540 JCAT 3G AJ SM", fig2, figure_canvas_agg2)
+fu.plot_coax2(coax, 200, 68, "QR® 540 JCAT 3G AJ SM", "Full", "Low", fig2, figure_canvas_agg2)
 
 x, y = fu.system_levels(1218, 17, 54, 35)
 
 fu.plot_levels(x, y, fig, figure_canvas_agg)
 
+
 while True:
     event, values = window.read()
+    if event in taps:
+        taps_dict = {i: values[i] for i in taps}
+
+        mult = taps_dict.values()
+
+        # calculating the sum-product excel style
+        s = taps_df.iloc[:, 1:].dot(list(mult))
+        taps_freq = taps_df["Frequency"]
+        fu.plot_tap_loss(taps_freq, s, fig4, figure_canvas_agg4)
 
     match event:
         case "calculate":
@@ -431,6 +485,11 @@ while True:
             y = coax_Freq_Modified["at_new_temp"] + df["Level (dBmV)"]
 
             fu.plot_levels(x, y.values, fig3, figure_canvas_agg3)
+
+        case "tap_reset":
+            for i in taps_dict.keys():
+                window[i].update(value=0)
+
         case "Exit":
             break
         case sg.WIN_CLOSED:

@@ -19,3 +19,5 @@ dist
 /build/System_levels/warn-System_levels.txt
 /build/System_levels/xref-System_levels.html
 /check_float.py
+/test.py
+/test2.py
