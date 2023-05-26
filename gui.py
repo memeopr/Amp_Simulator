@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
@@ -197,8 +198,47 @@ tap_column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_
                        layout=[[tap_frame]])
 
 tab3 = sg.Tab("Taps Loss", layout=[[tap_column]])
+
+#############################################################################################################
+#         TAB 4 -Amps
+#############################################################################################################
+
+amp_specs = pd.read_csv("amp_specs.csv")
+
+eqs_df = pd.read_csv("EQ.csv")
+eqs = eqs_df.columns.to_list()[1:]
+
+amps_df = pd.read_csv("amps.csv")
+amps = amps_df.columns.to_list()[1:]
+
+amp_image = sg.Image("images/MB120.png", size=(640, 480), key="amp_image")
+select_amp_label = sg.Text(" Select Amplifier")
+amp_combo = sg.Combo(amps, key="amp_type", default_value="MB120", enable_events=True)
+
+
+canvas5 = sg.Canvas(size=(640, 480), key="-canvas5-", background_color='white')
+
+amps_frame_layout = [[select_amp_label, amp_combo],
+                     [amp_image]]
+amp_frame = sg.Frame("Amplifier Type", layout=amps_frame_layout)
+
+amp_specs_text = sg.Text(amp_specs[amp_specs['Amplifier'] == "MB120"]['Specs'].squeeze(),
+                         key="amp_specs_text", justification='center', size=(80,5))
+
+amp_frame2 = sg.Frame("Amplifier Specifications", layout=[[amp_specs_text]], size=(640, 120))
+
+
+amp_column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
+                       layout=[[amp_frame],
+                               [amp_frame2],
+                               [canvas5]])
+
+tab4 = sg.Tab("Amplifiers", layout=[[amp_column]])
+
+
+#############################################################################################################
 window = sg.Window("System Levels by Tito Velez",
-                   layout=[[sg.TabGroup([[tab1, tab2, tab3]], expand_y=True)]],
+                   layout=[[sg.TabGroup([[tab1, tab2, tab3, tab4]], expand_y=True)]],
                    finalize=True,
                    resizable=True,
                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
@@ -240,6 +280,17 @@ figure_canvas_agg4.draw()
 figure_canvas_agg4.get_tk_widget().pack()
 
 
+# matplotlib System Plots 5
+
+fig5 = Figure(figsize=(6.40, 4.80))
+fig5.add_subplot(111).plot([], [])
+fig5.set_facecolor(color2)
+figure_canvas_agg5 = FigureCanvasTkAgg(fig5, window["-canvas5-"].TKCanvas)
+figure_canvas_agg5.draw()
+figure_canvas_agg5.get_tk_widget().pack()
+
+fu.plot_amp_gain(amps_df["Frequency"].to_list(), amps_df["MB120"].to_list(), fig5, figure_canvas_agg5)
+
 coax = coax_data_f
 fu.plot_coax2(coax, 200, 68, "QR® 540 JCAT 3G AJ SM", "Full", "Low", fig2, figure_canvas_agg2)
 
@@ -247,6 +298,9 @@ x, y = fu.system_levels(1218, 17, 54, 35)
 
 fu.plot_levels(x, y, fig, figure_canvas_agg)
 
+taps_freq = taps_df["Frequency"]
+s = np.zeros(len(taps_freq))
+fu.plot_tap_loss(taps_freq, s, fig4, figure_canvas_agg4)
 
 while True:
     event, values = window.read()
@@ -489,6 +543,13 @@ while True:
         case "tap_reset":
             for i in taps_dict.keys():
                 window[i].update(value=0)
+
+        case "amp_type":
+            window["amp_image"].update(source=f"images/{values['amp_type']}.png")
+            window["amp_specs_text"].update(
+                value=amp_specs[amp_specs['Amplifier'] == values["amp_type"]]['Specs'].squeeze())
+            fu.plot_amp_gain(amps_df["Frequency"].to_list(), amps_df[values["amp_type"]].to_list(), fig5,
+                             figure_canvas_agg5)
 
         case "Exit":
             break
