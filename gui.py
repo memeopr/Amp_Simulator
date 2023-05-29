@@ -1,21 +1,10 @@
 import PySimpleGUI as sg
 import numpy as np
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import pandas as pd
 import functions as fu
 
-
-def load_cable_descriptions():
-    return pd.read_csv("cable_descriptions.csv", encoding="UTF-8")
-
-
-def load_cable_data_100f():
-    return pd.read_csv("new_coax_db_per_100_feet.csv", encoding="UTF-8")
-
-
-def load_cable_100m():
-    return pd.read_csv("new_coax_db_per_100_meters.csv", encoding="UTF-8")
 
 
 #############################################################################################################
@@ -111,10 +100,10 @@ frame_t1 = sg.Frame("Coax Cable Parameters", layout=layout1_tab2, size=(640, 135
 
 ##################################################################################################################
 
-coax_data_f = load_cable_data_100f()
-coax_data_m = load_cable_100m()
+coax_data_f = fu.load_cable_data_100f()
+coax_data_m = fu.load_cable_100m()
 
-cable_descriptions = load_cable_descriptions()
+cable_descriptions = fu.load_cable_descriptions()
 
 cable_types = list(coax_data_f.columns.values)[1:]
 
@@ -169,12 +158,12 @@ tab2 = sg.Tab("Coax Loss", layout=[[column2]])
 #############################################################################################################
 
 taps_df = pd.read_csv("FFT-Q_TAPS.csv")
-taps = taps_df.columns.to_list()[1:]
+taps_types = taps_df.columns.to_list()[1:]
 
 
-two_way = [x for x in taps if "FFT2" in x.split("-")[0]]
-four_way = [x for x in taps if "FFT4" in x.split("-")[0]]
-eight_way = [x for x in taps if "FFT8" in x.split("-")[0]]
+two_way = [x for x in taps_types if "FFT2" in x.split("-")[0]]
+four_way = [x for x in taps_types if "FFT4" in x.split("-")[0]]
+eight_way = [x for x in taps_types if "FFT8" in x.split("-")[0]]
 
 tap_layout = []
 for i, text in enumerate(two_way):
@@ -235,10 +224,41 @@ amp_column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_
 
 tab4 = sg.Tab("Amplifiers", layout=[[amp_column]])
 
+#############################################################################################################
+#         TAB 5 -Amp Balancing
+#############################################################################################################
+
+select_input_eq_label = sg.Text("Select Input EQ", size=20)
+eq_combo = sg.Combo(eqs, key="eq_type", default_value="CE-120-0", enable_events=True, size=20)
+select_input_pad_label = sg.Text("Select Input PAD", size=20)
+# input_pad_spinner = sg.Spin(list(range(0, 25)), key="input_pad_type", initial_value=0, enable_events=True, size=20)
+input_pad_spinner = sg.Slider(range=(0, 25), key="input_pad_type", enable_events=True, orientation="horizontal", size=(50, 20))
+select_output_pad_label = sg.Text("Select Output PAD", size=20)
+# output_pad_spinner = sg.Spin(list(range(0, 25)), key="output_pad_type", initial_value=0, enable_events=True, size=20)
+output_pad_spinner = sg.Slider(range=(0, 25), key="output_pad_type", enable_events=True, orientation="horizontal", size=(50, 20))
+
+canvas6 = sg.Canvas(size=(640, 480), key="-canvas6-", background_color='white')
+
+amps_balancing_frame_layout = [[select_input_eq_label, eq_combo],
+                               [select_input_pad_label, input_pad_spinner],
+                               [select_output_pad_label, output_pad_spinner]]
+amp_balancing_frame = sg.Frame("RF Amplifier Setup", layout=amps_balancing_frame_layout)
+
+signal_selection = sg.Combo(["Amplifier Input", "Amplifier Input after PAD and EQ", "Amplifier Output"],
+                            default_value="Amplifier Input", enable_events=True, size=30, key="signal_selection")
+
+amp_balancing_column = sg.Column(scrollable=True, expand_x=False, expand_y=True, vertical_scroll_only=True,
+                                 layout=[[amp_balancing_frame],
+                                         [sg.HorizontalSeparator(pad=((10, 10), (20, 20)))],
+                                         [signal_selection],
+                                         [canvas6]])
+
+tab5 = sg.Tab("Amplifier Balancing", layout=[[amp_balancing_column]])
+
 
 #############################################################################################################
 window = sg.Window("System Levels by Tito Velez",
-                   layout=[[sg.TabGroup([[tab1, tab2, tab3, tab4]], expand_y=True)]],
+                   layout=[[sg.TabGroup([[tab1, tab2, tab3, tab4, tab5]], expand_y=True)]],
                    finalize=True,
                    resizable=True,
                    font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
@@ -289,6 +309,17 @@ figure_canvas_agg5 = FigureCanvasTkAgg(fig5, window["-canvas5-"].TKCanvas)
 figure_canvas_agg5.draw()
 figure_canvas_agg5.get_tk_widget().pack()
 
+# matplotlib System Plots 6
+
+fig6 = Figure(figsize=(6.40, 4.80))
+fig6.add_subplot(111).plot([], [])
+fig6.set_facecolor(color2)
+figure_canvas_agg6 = FigureCanvasTkAgg(fig6, window["-canvas6-"].TKCanvas)
+figure_canvas_agg6.draw()
+toolbar = NavigationToolbar2Tk(figure_canvas_agg6, window["-canvas6-"].TKCanvas)
+toolbar.update()
+figure_canvas_agg6.get_tk_widget().pack()
+
 fu.plot_amp_gain(amps_df["Frequency"].to_list(), amps_df["MB120"].to_list(), fig5, figure_canvas_agg5)
 
 coax = coax_data_f
@@ -302,10 +333,49 @@ taps_freq = taps_df["Frequency"]
 s = np.zeros(len(taps_freq))
 fu.plot_tap_loss(taps_freq, s, fig4, figure_canvas_agg4)
 
+values = {"eq_type": "CE-120-2", "input_pad_type": 0, "output_pad_type": 0, "amp_type": "MB120"}
+
+
+cable_selected = cable_types[0]
+coax_balancing = coax_data_f[["Frequency", cable_selected]]
+coax_balancing = coax_balancing[coax_balancing["Frequency"].isin(x)].reset_index(drop=True)
+taps = taps_df[taps_df["Frequency"].isin(x)]
+
+taps_selected = np.random.randint(0, 2, len(taps_types))
+taps_loss = taps.iloc[:, 1:].dot(taps_selected)
+
+temperature = 68
+distance = 700
+
+coax_balancing["coax_loss"] = coax_balancing[cable_selected].map(lambda x: fu.total_loss(x, distance))
+coax_balancing["coax_loss"] = coax_balancing["coax_loss"].map(lambda x: fu.temp_change(x, temperature))
+
+total_passive_loss = coax_balancing["coax_loss"] + taps_loss
+amplifier_input = y + total_passive_loss
+
+input_pad_selected = values["input_pad_type"] * np.ones(len(x))
+output_pad_selected = values["output_pad_type"] * np.ones(len(x))
+input_eq_selected = eqs_df[eqs_df["Frequency"].isin(x)][values["eq_type"]]
+
+amplifier_input_after_pad_and_eq = amplifier_input - input_pad_selected \
+                                   + input_eq_selected
+
+amp_selected_gain = amps_df[amps_df["Frequency"].isin(x)][values["amp_type"]]
+
+amplifier_output = amplifier_input_after_pad_and_eq + amp_selected_gain - output_pad_selected
+
+fu.plot_amp_gain(x, amplifier_input.to_list(), fig6, figure_canvas_agg6)
+fig6.axes[0].set_title('Amplifier Input')
+figure_canvas_agg6.draw()
+figure_canvas_agg6.get_tk_widget().pack()
+
+
 while True:
     event, values = window.read()
-    if event in taps:
-        taps_dict = {i: values[i] for i in taps}
+    taps_dict = {i: values[i] for i in taps_types}
+    taps_selected = taps_dict.values()
+    if event in taps_types:
+        taps_dict = {i: values[i] for i in taps_types}
 
         mult = taps_dict.values()
 
@@ -313,6 +383,57 @@ while True:
         s = taps_df.iloc[:, 1:].dot(list(mult))
         taps_freq = taps_df["Frequency"]
         fu.plot_tap_loss(taps_freq, s, fig4, figure_canvas_agg4)
+
+    if values["use_two_pilots"]:
+        x, y = fu.system_levels2(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                 float(values['carrier_freq']), float(values['carrier_level']),
+                                 values['split'])
+    else:
+        x, y = fu.system_levels(float(values['high_freq']), float(values['tilt_at_high_freq']),
+                                float(values['carrier_freq']), float(values['carrier_level']),
+                                values['split'])
+
+    if values["feet_radio"]:
+        coax_balancing = coax_data_f[["Frequency", values["cable_type"]]]
+    elif values["meters_radio"]:
+        coax_balancing = coax_data_m[["Frequency", values["cable_type"]]]
+    taps = taps_df[taps_df["Frequency"].isin(x)]
+    taps_loss = taps.iloc[:, 1:].dot(list(taps_selected))
+
+    coax_balancing = coax_balancing[coax_balancing["Frequency"].isin(x)].reset_index(drop=True)
+    # coax_balancing["coax_loss"] = coax_balancing[values["cable_type"]].map(lambda x: fu.total_loss(x, values["-distance-"]))
+    coax_balancing["coax_loss"] = coax_balancing[values["cable_type"]].map(lambda x: fu.total_loss(x, float(values["-cable_length-"])))
+    coax_balancing["coax_loss"] = coax_balancing["coax_loss"].map(lambda x: fu.temp_change(x, values["-temperature-"]))
+
+    total_passive_loss = coax_balancing["coax_loss"] + taps_loss
+    amplifier_input = y + total_passive_loss
+    input_pad_selected = values["input_pad_type"] * np.ones(len(x))
+    output_pad_selected = values["output_pad_type"] * np.ones(len(x))
+    input_eq_selected = eqs_df[eqs_df["Frequency"].isin(x)][values["eq_type"]]
+
+    amplifier_input_after_pad_and_eq = amplifier_input - input_pad_selected \
+                                       + input_eq_selected
+
+    amp_selected_gain = amps_df[amps_df["Frequency"].isin(x)][values["amp_type"]]
+
+    amplifier_output = amplifier_input_after_pad_and_eq + amp_selected_gain - output_pad_selected
+
+    if event in ["input_pad_type", "output_pad_type", "eq_type", "signal_selection"]:
+        if values["signal_selection"] == "Amplifier Input":
+            fu.plot_amp_gain(x, amplifier_input.to_list(), fig6, figure_canvas_agg6)
+            fig6.axes[0].set_title('Amplifier Input')
+            figure_canvas_agg6.draw()
+            figure_canvas_agg6.get_tk_widget().pack()
+        elif values["signal_selection"] == "Amplifier Input after PAD and EQ":
+            fu.plot_amp_gain(x, amplifier_input_after_pad_and_eq.to_list(), fig6, figure_canvas_agg6)
+            fig6.axes[0].set_title('Amplifier Input After Input PAD and EQ')
+            figure_canvas_agg6.draw()
+            figure_canvas_agg6.get_tk_widget().pack()
+        elif values["signal_selection"] == "Amplifier Output":
+            fu.plot_amp_gain(x, amplifier_output.to_list(), fig6, figure_canvas_agg6)
+            fig6.axes[0].set_title('Amplifier Output')
+            figure_canvas_agg6.draw()
+            figure_canvas_agg6.get_tk_widget().pack()
 
     match event:
         case "calculate":

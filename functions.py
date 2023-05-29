@@ -1,6 +1,19 @@
 from matplotlib.figure import Figure
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pandas as pd
+
+
+def load_cable_descriptions():
+    return pd.read_csv("cable_descriptions.csv", encoding="UTF-8")
+
+
+def load_cable_data_100f():
+    return pd.read_csv("new_coax_db_per_100_feet.csv", encoding="UTF-8")
+
+
+def load_cable_100m():
+    return pd.read_csv("new_coax_db_per_100_meters.csv", encoding="UTF-8")
 
 
 def add_labels(x, y, axes):
