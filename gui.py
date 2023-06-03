@@ -157,7 +157,7 @@ tab2 = sg.Tab("Coax Loss", layout=[[column2]])
 #         TAB 3 -Tap Loss
 #############################################################################################################
 
-taps_df = pd.read_csv("FFT-Q_TAPS.csv")
+taps_df = pd.read_csv(fu.resource_path("FFT-Q_TAPS.csv"))
 taps_types = taps_df.columns.to_list()[1:]
 
 
@@ -192,15 +192,15 @@ tab3 = sg.Tab("Taps Loss", layout=[[tap_column]])
 #         TAB 4 -Amps
 #############################################################################################################
 
-amp_specs = pd.read_csv("amp_specs.csv")
+amp_specs = pd.read_csv(fu.resource_path("amp_specs.csv"))
 
-eqs_df = pd.read_csv("EQ.csv")
+eqs_df = pd.read_csv(fu.resource_path("EQ.csv"))
 eqs = eqs_df.columns.to_list()[1:]
 
-amps_df = pd.read_csv("amps.csv")
+amps_df = pd.read_csv(fu.resource_path("amps.csv"))
 amps = amps_df.columns.to_list()[1:]
 
-amp_image = sg.Image("images/MB120.png", size=(640, 480), key="amp_image")
+amp_image = sg.Image(fu.resource_path("images/MB120.png"), size=(640, 480), key="amp_image")
 select_amp_label = sg.Text(" Select Amplifier")
 amp_combo = sg.Combo(amps, key="amp_type", default_value="MB120", enable_events=True)
 
@@ -666,7 +666,7 @@ while True:
                 window[i].update(value=0)
 
         case "amp_type":
-            window["amp_image"].update(source=f"images/{values['amp_type']}.png")
+            window["amp_image"].update(source=fu.resource_path(f"images/{values['amp_type']}.png"))
             window["amp_specs_text"].update(
                 value=amp_specs[amp_specs['Amplifier'] == values["amp_type"]]['Specs'].squeeze())
             fu.plot_amp_gain(amps_df["Frequency"].to_list(), amps_df[values["amp_type"]].to_list(), fig5,

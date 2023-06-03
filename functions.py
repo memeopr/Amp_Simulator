@@ -2,18 +2,31 @@ from matplotlib.figure import Figure
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
+import os
+import sys
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 def load_cable_descriptions():
-    return pd.read_csv("cable_descriptions.csv", encoding="UTF-8")
+    return pd.read_csv(resource_path("cable_descriptions.csv"), encoding="UTF-8")
 
 
 def load_cable_data_100f():
-    return pd.read_csv("new_coax_db_per_100_feet.csv", encoding="UTF-8")
+    return pd.read_csv(resource_path("new_coax_db_per_100_feet.csv"), encoding="UTF-8")
 
 
 def load_cable_100m():
-    return pd.read_csv("new_coax_db_per_100_meters.csv", encoding="UTF-8")
+    return pd.read_csv(resource_path("new_coax_db_per_100_meters.csv"), encoding="UTF-8")
 
 
 def add_labels(x, y, axes):
@@ -1065,6 +1078,7 @@ if __name__ == "__main__":
 
     # To create .exe I used the following command in terminal:
     # pyinstaller --onefile --windowed --clean --icon icon.ico --name System_levels gui.py
+    # pyinstaller --onefile --windowed --clean --add-data '*.csv;.' --add-data 'images;images' --icon icon.ico --name System_levels_06012023 gui.py
 
 
 
