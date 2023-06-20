@@ -405,11 +405,11 @@ while True:
     coax_balancing["coax_loss"] = coax_balancing[values["cable_type"]].map(lambda x: fu.total_loss(x, float(values["-cable_length-"])))
     coax_balancing["coax_loss"] = coax_balancing["coax_loss"].map(lambda x: fu.temp_change(x, values["-temperature-"]))
 
-    total_passive_loss = coax_balancing["coax_loss"] + taps_loss
+    total_passive_loss = coax_balancing["coax_loss"] + taps_loss.reset_index(drop=True)
     # print(type(total_passive_loss))
     # total_passive_loss = total_passive_loss.dropna()
 
-    amplifier_input = y + total_passive_loss
+    amplifier_input = y + total_passive_loss.to_list()
     input_pad_selected = values["input_pad_type"] * np.ones(len(x))
     output_pad_selected = values["output_pad_type"] * np.ones(len(x))
     input_eq_selected = eqs_df[eqs_df["Frequency"].isin(x)][values["eq_type"]]
