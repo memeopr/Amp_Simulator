@@ -423,7 +423,7 @@ while True:
 
     if event in ["input_pad_type", "output_pad_type", "eq_type", "signal_selection"]:
         if values["signal_selection"] == "Amplifier Input":
-            fu.plot_amp_gain(x, amplifier_input.to_list(), fig6, figure_canvas_agg6)
+            fu.plot_amp_gain(x, amplifier_input, fig6, figure_canvas_agg6)
             fig6.axes[0].set_title('Amplifier Input')
             figure_canvas_agg6.draw()
             figure_canvas_agg6.get_tk_widget().pack()
