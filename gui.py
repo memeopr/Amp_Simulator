@@ -406,6 +406,9 @@ while True:
     coax_balancing["coax_loss"] = coax_balancing["coax_loss"].map(lambda x: fu.temp_change(x, values["-temperature-"]))
 
     total_passive_loss = coax_balancing["coax_loss"] + taps_loss
+    # print(type(total_passive_loss))
+    # total_passive_loss = total_passive_loss.dropna()
+
     amplifier_input = y + total_passive_loss
     input_pad_selected = values["input_pad_type"] * np.ones(len(x))
     output_pad_selected = values["output_pad_type"] * np.ones(len(x))
