@@ -1078,7 +1078,7 @@ if __name__ == "__main__":
 
     # To create .exe I used the following command in terminal:
     # pyinstaller --onefile --windowed --clean --icon icon.ico --name System_levels gui.py
-    # pyinstaller --onefile --windowed --clean --add-data '*.csv;.' --add-data 'images;images' --icon icon.ico --name System_levels_06012023 gui.py
+    # pyinstaller --onefile --windowed --clean --add-data '*.csv;.' --add-data 'icon.ico;.' --add-data 'images;images' --icon icon.ico --name System_levels_06012023 gui.py
 
 
 

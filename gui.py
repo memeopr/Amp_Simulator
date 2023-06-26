@@ -261,7 +261,7 @@ window = sg.Window("System Levels by Tito Velez",
                    layout=[[sg.TabGroup([[tab1, tab2, tab3, tab4, tab5]], expand_y=True)]],
                    finalize=True,
                    resizable=True,
-                   font=("Helvetica", 10), icon=r"K:\PythonProjects\pythonProject\Amp_Simulator\icon.ico")
+                   font=("Helvetica", 10), icon=fu.resource_path("icon.ico"))
 
 # matplotlib System levels
 
