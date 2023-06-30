@@ -270,6 +270,8 @@ fig.add_subplot(111).bar([], [])
 fig.set_facecolor(color2)
 figure_canvas_agg = FigureCanvasTkAgg(fig, window["-canvas-"].TKCanvas)
 figure_canvas_agg.draw()
+toolbar = NavigationToolbar2Tk(figure_canvas_agg, window["-canvas-"].TKCanvas)
+toolbar.update()
 figure_canvas_agg.get_tk_widget().pack()
 
 # matplotlib Coax Plot
@@ -279,6 +281,8 @@ fig2.add_subplot(111).plot([], [])
 fig2.set_facecolor(color2)
 figure_canvas_agg2 = FigureCanvasTkAgg(fig2, window["-canvas2-"].TKCanvas)
 figure_canvas_agg2.draw()
+toolbar2 = NavigationToolbar2Tk(figure_canvas_agg2, window["-canvas2-"].TKCanvas)
+toolbar2.update()
 figure_canvas_agg2.get_tk_widget().pack()
 
 # matplotlib System Plots 3
@@ -288,6 +292,8 @@ fig3.add_subplot(111).plot([], [])
 fig3.set_facecolor(color2)
 figure_canvas_agg3 = FigureCanvasTkAgg(fig3, window["-canvas3-"].TKCanvas)
 figure_canvas_agg3.draw()
+toolbar3 = NavigationToolbar2Tk(figure_canvas_agg3, window["-canvas3-"].TKCanvas)
+toolbar3.update()
 figure_canvas_agg3.get_tk_widget().pack()
 
 # matplotlib System Plots 4
@@ -297,6 +303,8 @@ fig4.add_subplot(111).plot([], [])
 fig4.set_facecolor(color2)
 figure_canvas_agg4 = FigureCanvasTkAgg(fig4, window["-canvas4-"].TKCanvas)
 figure_canvas_agg4.draw()
+toolbar4 = NavigationToolbar2Tk(figure_canvas_agg4, window["-canvas4-"].TKCanvas)
+toolbar4.update()
 figure_canvas_agg4.get_tk_widget().pack()
 
 
@@ -307,6 +315,8 @@ fig5.add_subplot(111).plot([], [])
 fig5.set_facecolor(color2)
 figure_canvas_agg5 = FigureCanvasTkAgg(fig5, window["-canvas5-"].TKCanvas)
 figure_canvas_agg5.draw()
+toolbar5 = NavigationToolbar2Tk(figure_canvas_agg5, window["-canvas5-"].TKCanvas)
+toolbar5.update()
 figure_canvas_agg5.get_tk_widget().pack()
 
 # matplotlib System Plots 6
@@ -316,8 +326,8 @@ fig6.add_subplot(111).plot([], [])
 fig6.set_facecolor(color2)
 figure_canvas_agg6 = FigureCanvasTkAgg(fig6, window["-canvas6-"].TKCanvas)
 figure_canvas_agg6.draw()
-toolbar = NavigationToolbar2Tk(figure_canvas_agg6, window["-canvas6-"].TKCanvas)
-toolbar.update()
+toolbar6 = NavigationToolbar2Tk(figure_canvas_agg6, window["-canvas6-"].TKCanvas)
+toolbar6.update()
 figure_canvas_agg6.get_tk_widget().pack()
 
 fu.plot_amp_gain(amps_df["Frequency"].to_list(), amps_df["MB120"].to_list(), fig5, figure_canvas_agg5)
@@ -372,8 +382,13 @@ figure_canvas_agg6.get_tk_widget().pack()
 
 while True:
     event, values = window.read()
+
+    if event == "Exit" or event == sg.WIN_CLOSED:
+        break
+
     taps_dict = {i: values[i] for i in taps_types}
     taps_selected = taps_dict.values()
+
     if event in taps_types:
         taps_dict = {i: values[i] for i in taps_types}
 
@@ -397,6 +412,7 @@ while True:
         coax_balancing = coax_data_f[["Frequency", values["cable_type"]]]
     elif values["meters_radio"]:
         coax_balancing = coax_data_m[["Frequency", values["cable_type"]]]
+
     taps = taps_df[taps_df["Frequency"].isin(x)]
     taps_loss = taps.iloc[:, 1:].dot(list(taps_selected))
 
