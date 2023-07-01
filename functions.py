@@ -53,7 +53,7 @@ def plot_levels(x, y, fig, figure_canvas_agg):
     axes[0].tick_params(axis='y', colors=color)
     # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
 
-    axes[0].text(x[int(len(x)/2)], max(y)+.5, f"Tilt: {np.round(tilt, 1)}", fontsize='x-small', horizontalalignment='center', color='purple')
+    axes[0].text(x[int(len(x)/2)], max(y)+.01*max(y), f"Tilt: {np.round(tilt, 1)}", fontsize='x-small', horizontalalignment='center', color='purple')
 
     samples = 5
     try:
@@ -126,7 +126,7 @@ def plot_amp_gain(x, y, fig, figure_canvas_agg):
     axes[0].tick_params(axis='y', colors=color)
     # axes[0].set_xticks(list(axes[0].get_xticks()) + [x[0]])
 
-    axes[0].text(x[int(len(x)/2)], max(y)+.5, f"Tilt: {np.round(tilt, 1)}", fontsize='x-small', horizontalalignment='center', color='purple')
+    axes[0].text(x[int(len(x)/2)], max(y)+.01*max(y), f"Tilt: {np.round(tilt, 1)}", fontsize='x-small', horizontalalignment='center', color='purple')
 
     samples = 5
     try:
