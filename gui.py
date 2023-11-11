@@ -89,14 +89,18 @@ cable_length_units_label = sg.Text("Select Length Units")
 feet_radio = sg.Radio("Feet", group_id=1, default=True, enable_events=True, key="feet_radio")
 meters_radio = sg.Radio("Meters", group_id=1, enable_events=True, key="meters_radio")
 cable_length_label = sg.Text("Enter Cable Length in Feet", key="cable_length_label")
-cable_length = sg.InputText(tooltip="Enter Cable Length", key="-cable_length-", default_text="200", enable_events=True)
+#cable_length = sg.InputText(tooltip="Enter Cable Length", key="-cable_length-", default_text="200", enable_events=True)
+cable_length = sg.Slider(range=(0, 3000), default_value=200, key="-cable_length-", orientation="horizontal", size=(60, 20), enable_events=True)
+#temp_slider = sg.Slider(range=(-80, 200), default_value=68, enable_events=True, key="-temperature-",
+#                        orientation="horizontal", size=(60, 20))
+
 
 layout1_tab2 = [[cable_length_units_label],
                 [feet_radio, meters_radio],
                 [cable_length_label],
                 [cable_length]]
 
-frame_t1 = sg.Frame("Coax Cable Parameters", layout=layout1_tab2, size=(640, 135))
+frame_t1 = sg.Frame("Coax Cable Parameters", layout=layout1_tab2, size=(640, 155))
 
 ##################################################################################################################
 
@@ -604,14 +608,14 @@ while True:
                           values["choice1"], values["choice2"], fig2,
                           figure_canvas_agg2)
         case "-cable_length-":
-            if values["-cable_length-"].isnumeric():
+            #if values["-cable_length-"].isnumeric():
 
                 fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
                               values["choice1"], values["choice2"], fig2,
                               figure_canvas_agg2)
                 window["-distance-"].update(range=(0, values["-cable_length-"]))
-            else:
-                sg.popup_error("Length must be numeric")
+            #else:
+                #sg.popup_error("Length must be numeric")
         case "-temperature-":
 
             fu.plot_coax2(coax, float(values["-cable_length-"]), values["-temperature-"], values["cable_type"],
