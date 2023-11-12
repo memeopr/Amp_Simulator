@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import pandas as pd
 import functions as fu
 
-
+pd.set_option('mode.chained_assignment', None)
 
 #############################################################################################################
 #         TAB 1 -System Levels
