@@ -232,8 +232,9 @@ tab4 = sg.Tab("Amplifiers", layout=[[amp_column]])
 #         TAB 5 -Amp Balancing
 #############################################################################################################
 
-select_input_eq_label = sg.Text("Select Input EQ", size=20)
-eq_combo = sg.Combo(eqs, key="eq_type", default_value="CE-120-0", enable_events=True, size=20)
+select_input_eq_label = sg.Text("Select Input CEQ/CS/LEQ", size=20)
+eq_combo = sg.Slider(range=(0, len(eqs)-1), default_value=0, key="eq_type", orientation="horizontal", size=(50, 20), enable_events=True, disable_number_display=True)
+eq_label = sg.Text(eqs[0], size=20, key="-eq_label-")
 select_input_pad_label = sg.Text("Select Input PAD", size=20)
 # input_pad_spinner = sg.Spin(list(range(0, 25)), key="input_pad_type", initial_value=0, enable_events=True, size=20)
 input_pad_spinner = sg.Slider(range=(0, 25), key="input_pad_type", enable_events=True, orientation="horizontal", size=(50, 20))
@@ -243,7 +244,7 @@ output_pad_spinner = sg.Slider(range=(0, 25), key="output_pad_type", enable_even
 
 canvas6 = sg.Canvas(size=(640, 480), key="-canvas6-", background_color='white')
 
-amps_balancing_frame_layout = [[select_input_eq_label, eq_combo],
+amps_balancing_frame_layout = [[select_input_eq_label], [eq_label, eq_combo],
                                [select_input_pad_label, input_pad_spinner],
                                [select_output_pad_label, output_pad_spinner]]
 amp_balancing_frame = sg.Frame("RF Amplifier Setup", layout=amps_balancing_frame_layout)
@@ -432,7 +433,7 @@ while True:
     amplifier_input = y + total_passive_loss.to_list()
     input_pad_selected = values["input_pad_type"] * np.ones(len(x))
     output_pad_selected = values["output_pad_type"] * np.ones(len(x))
-    input_eq_selected = eqs_df[eqs_df["Frequency"].isin(x)][values["eq_type"]]
+    input_eq_selected = eqs_df[eqs_df["Frequency"].isin(x)][eqs[int(values["eq_type"])]]
 
     amplifier_input_after_pad_and_eq = amplifier_input - input_pad_selected \
                                        + input_eq_selected
@@ -442,6 +443,7 @@ while True:
     amplifier_output = amplifier_input_after_pad_and_eq + amp_selected_gain - output_pad_selected
 
     if event in ["input_pad_type", "output_pad_type", "eq_type", "signal_selection"]:
+        window["-eq_label-"].update(eqs[int(values["eq_type"])])
         if values["signal_selection"] == "Amplifier Input":
             fu.plot_amp_gain(x, amplifier_input, fig6, figure_canvas_agg6)
             fig6.axes[0].set_title('Amplifier Input')
